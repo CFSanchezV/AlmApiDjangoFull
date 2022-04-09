@@ -6,6 +6,11 @@ name = "pypi"
 [packages]
 django = "*"
 django-debug-toolbar = "*"
+psycopg2 = "*"
+dj-database-url = "*"
+python-decouple = "*"
+pillow = "*"
+whitenoise = "*"
 
 [dev-packages]
 
