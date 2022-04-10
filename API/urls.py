@@ -8,14 +8,14 @@ app_name = 'api'
 
 # URL config
 urlpatterns = [
-    path('hello/', views.say_hello),
     path('test/', views.test_api, name='test_api_communication'),
+    path('clean_folders/', views.clean_folders, name='clean_img_folders'),
+
     path('measureme/', views.run_measureme_tool, name='run_measurements_on_images'),
-    path('clean/', views.clean_folders, name='clean_img_folders'),
-    path('measuredata/', views.measurements_list, name='measurement_data'),
-    path('delete/', views.delete_last, name='delete_last'),
-    path('delete/<uuid>', views.delete_by_id, name='delete_by_uuid'),
-    path('first/', views.first_measurement, name='single_measurement'),
+    
+    path('delete_last_measurement/', views.delete_last_measurement, name='delete_last_measurement'),
+    path('medidas/', views.MeasurementList.as_view(), name='lista_medidas'),
+    path('medidas/<uuid:pk>', views.MeasurementDetail.as_view(), name='detalle_medida'),
 
     path('clientes/', views.ClienteList.as_view(), name='lista_clientes'),
     path('clientes/<int:pk>', views.ClienteDetail.as_view(), name='detalle_cliente'),

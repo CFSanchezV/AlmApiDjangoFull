@@ -36,8 +36,8 @@ class Measurement(models.Model):
     leg = models.FloatField(default=0)
     created_at = models.DateTimeField(verbose_name='Creado en', default=now, editable=False)
 
-def __str__(self):
-        return "Medida {} | cuello:{}, pecho:{}, cintura:{}, cadera:{}, altura:{}, brazos:{}, piernas:{}".format(self.uuid, self.neck, self.chest, self.waist, self.hip, self.height, self.arm, self.leg)
+    def __str__(self):
+        return "Medidas | cuello:{}, pecho:{}, cintura:{}, cadera:{}, altura:{}, brazos:{}, piernas:{}".format(self.neck, self.chest, self.waist, self.hip, self.height, self.arm, self.leg)
 
 
 ## RESTO DEL API

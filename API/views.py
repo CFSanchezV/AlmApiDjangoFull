@@ -3,21 +3,20 @@ from django.views.decorators.cache import never_cache
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 import shutil
 
 from . utils import *
 from . models import ImageSegmentation, Measurement, Prenda, Tela, Empresa, Local, Cliente, ContactoCliente, ItemPedido, Pedido
 from . serializers import ClienteSerializer, EmpresaSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PrendaSerializer, TelaSerializer, PedidoSerializer, ItemPedidoSerializer
 
-# test
-def say_hello(request):
-    return render(request, 'hello.html', {'name': 'Christian'})
 
+# UTILITIES REQUEST HANDLERS
 
 @api_view(['GET'])
 @never_cache
 def test_api(request):
-    return Response({'response':"Successfully connected to ImageApi"})
+    return Response({'response':"Successfully connected to ALMapi"})
 
 
 @api_view(['POST'])
@@ -97,44 +96,42 @@ def clean_folders(request):
 
     return Response({'response': "Media folders were cleaned up!!"})
 
+### ___________________________________________________________ ###
 
-@api_view(['GET'])
-def measurements_list(request):
-    queryset = Measurement.objects.all()
-
-    serializer = MeasurementSerializer(queryset, many=True)
-    return Response(serializer.data)
-
+## MEDIDAS / MEASUREMENTS
 
 @api_view(['DELETE'])
-def delete_last(request):
+def delete_last_measurement(request):
+    # returns deleted Measurement Data
     measure = Measurement.objects.last()
     Measurement.objects.filter(uuid=measure.uuid).delete()
 
     serializer = MeasurementSerializer(measure)
     return Response(data=serializer.data)
 
+class MeasurementList(ListCreateAPIView):
+    queryset = Measurement.objects.all()
+    serializer_class = MeasurementSerializer
 
-@api_view(['DELETE'])
-def delete_by_id(request, uuid):
-    measure = Measurement.objects.get(pk=uuid)
-    Measurement.objects.filter(uuid=measure.uuid).delete()
+    def get_serializer_context(self):
+        return {'request': self.request}
 
-    serializer = MeasurementSerializer(measure)
-    return Response(data=serializer.data)
+class MeasurementDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Measurement.objects.all()
+    serializer_class = MeasurementSerializer
+
+    def delete(self, request, pk):
+        medida = get_object_or_404(Measurement, pk=pk)
+        if medida.items_medida.count() > 0:
+            return Response({'error': 'Las medidas no pueden ser eliminadas porque tiene ítems asociados.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        medida.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(['GET'])
-def first_measurement(request):
-    measurement = Measurement.objects.first()
-
-    serializer = MeasurementSerializer(measurement)
-    return Response(serializer.data)
+### ___________________________________________________________ ###
 
 
 ## CLIENTES
-from django.db.models.aggregates import Count
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
 class ClienteList(ListCreateAPIView):
     queryset = Cliente.objects.select_related('contacto').all()
