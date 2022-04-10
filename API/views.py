@@ -6,8 +6,8 @@ from rest_framework import status
 import shutil
 
 from . utils import *
-from . models import Cliente, ImageSegmentation, Measurement, Prenda, Empresa, Local, ItemPedido, Pedido
-from . serializers import ClienteSerializer, MeasurementSerializer, ImageSerializer
+from . models import Cliente, ImageSegmentation, Measurement, Prenda, Empresa, Local, ItemPedido, Pedido, ContactoCliente
+from . serializers import ClienteSerializer, EmpresaSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PedidoSerializer, ItemPedidoSerializer
 
 # test
 def say_hello(request):
@@ -133,34 +133,76 @@ def first_measurement(request):
 
 
 ## CLIENTES
+from django.db.models.aggregates import Count
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 
+class ClienteList(ListCreateAPIView):
+    queryset = Cliente.objects.select_related('contacto').all()
+    serializer_class = ClienteSerializer
 
-@api_view(['GET', 'POST'])
-def cliente_list(request, id):
-    cliente = get_object_or_404(Cliente, pk=id)
-    if request.method == 'GET':
-        serializer = ClienteSerializer(cliente)
-        return Response(serializer.data)
-    elif request.method == 'POST':
-        serializer = ClienteSerializer(cliente, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def get_serializer_context(self):
+        return {'request': self.request}
 
+class ClienteDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Cliente.objects.all()
+    serializer_class = ClienteSerializer
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def cliente_detail(request, id):
-    cliente = get_object_or_404(Cliente, pk=id)
-    if request.method == 'GET':
-        serializer = ClienteSerializer(cliente)
-        return Response(serializer.data)
-    elif request.method == 'PUT':
-        serializer = ClienteSerializer(cliente, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-    elif request.method == 'DELETE':
+    def delete(self, request, pk):
+        cliente = get_object_or_404(Cliente, pk=pk)
         if cliente.pedidos_cliente.count() > 0:
             return Response({'error': 'Cliente no puede ser eliminado porque tiene un pedido asociado'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         cliente.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ContactoClienteList(ListCreateAPIView):
+    queryset = ContactoCliente.objects.select_related('cliente').all()
+    serializer_class = ContactoClienteSerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+class ContactoClienteDetail(RetrieveUpdateDestroyAPIView):
+    queryset = ContactoCliente.objects.select_related('cliente').all()
+    serializer_class = ContactoClienteSerializer
+
+
+## EMPRESAS
+
+class EmpresaList(ListCreateAPIView):
+    queryset = Empresa.objects.all()
+    serializer_class = EmpresaSerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+class EmpresaDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Empresa.objects.all()
+    serializer_class = EmpresaSerializer
+
+    def delete(self, request, pk):
+        empresa = get_object_or_404(Empresa, pk=pk)
+        if empresa.pedidos_empresa.count() > 0:
+            return Response({'error': 'Empresa no puede ser eliminada porque tiene un pedido asociado'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        empresa.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class LocalList(ListCreateAPIView):
+    queryset = Local.objects.select_related('empresa').all()
+    serializer_class = LocalSerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+class LocalDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Local.objects.all()
+    serializer_class = LocalSerializer
+
+    def delete(self, request, pk):
+        local = get_object_or_404(Local, pk=pk)
+        if local.pedidos_local.count() > 0:
+            return Response({'error': 'Local no puede ser eliminada porque tiene un pedido asociado'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        local.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+

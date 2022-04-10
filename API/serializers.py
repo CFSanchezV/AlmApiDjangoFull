@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from . models import ImageSegmentation, Image, ItemPedido, Measurement, Cliente, ContactoCliente, Empresa, Local,  Pedido, ItemPedido, Prenda, Tela
+from . models import ImageSegmentation, Image, ItemPedido, Measurement, Cliente, Empresa, Local,  Pedido, ItemPedido, Prenda, Tela, ContactoCliente
 
 class OutputImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,30 +21,40 @@ class MeasurementSerializer(serializers.ModelSerializer):
 class ClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cliente
-        fields = ['tipo_usuario', 'nombre', 'apellido', 'dni', 'email']
+        fields = ['tipo_usuario', 'nombre', 'apellido', 'dni', 'email', 'contacto']
 
-class ContactoSerializer(serializers.ModelSerializer):
-    cliente = ClienteSerializer(required=False)
+    tipo_usuario = serializers.CharField(read_only=True)
 
+    contacto = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
+
+class ContactoClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactoCliente
-        fields = ['cliente', 'direccion', 'telefono', 'ciudad']
+        fields = ['direccion', 'telefono', 'ciudad', 'cliente']
+
+    # cliente = serializers.PrimaryKeyRelatedField(read_only=True)
 
 
 ## empresas
 class EmpresaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Empresa
-        fields = ['tipo_usuario', 'nombre', 'ruc', 'email', 'prendas']
+        fields = ['tipo_usuario', 'nombre', 'ruc', 'email', 'prendas', 'locales']
     
-    prendas = serializers.PrimaryKeyRelatedField(
-        queryset=Empresa.objects.all()
-    )
+    tipo_usuario = serializers.CharField(read_only=True)
+
+    prendas = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+    locales = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+    
 
 class LocalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Local
         fields = ['nombre_sede', 'direccion', 'ciudad', 'telefono', 'empresa']
+
+    # empresa = serializers.PrimaryKeyRelatedField(read_only=True)
 
 
 ## prenda

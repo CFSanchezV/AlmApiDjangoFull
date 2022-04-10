@@ -58,12 +58,14 @@ class Cliente(models.Model):
     class Meta:
         db_table = 'cliente'
 
+    def __str__(self):
+        return "{} {}".format(self.nombre, self.apellido)
+
 class ContactoCliente(models.Model):
-    cliente = models.OneToOneField(
-        Cliente, on_delete=models.CASCADE, primary_key=True)
     direccion = models.CharField(max_length=255, null=True)
     telefono = models.CharField(max_length=255, null=True)
     ciudad = models.CharField(max_length=255, null=True)
+    cliente = models.OneToOneField(Cliente, null=True, on_delete=models.SET_NULL, related_name='contacto')
     
     class Meta:
         db_table = 'contacto_cliente'
@@ -85,6 +87,9 @@ class Empresa(models.Model):
 
     class Meta:
         db_table = 'empresa'
+
+    def __str__(self):
+        return "{0}".format(self.nombre)
 
 class Local(models.Model):
     nombre_sede = models.CharField(verbose_name='Nombre de sede', max_length=255, null=True)
