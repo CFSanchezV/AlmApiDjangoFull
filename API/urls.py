@@ -32,8 +32,8 @@ urlpatterns = [
     path('telas/', views.TelaList.as_view(), name='lista_telas'),
     path('telas/<int:pk>', views.TelaDetail.as_view(), name='detalle_tela'),
 
-    path('item_pedidos/', views.ItemPedidoList.as_view(), name='lista_items_pedidos'),
-    path('item_pedidos/<int:pk>', views.ItemPedidoDetail.as_view(), name='detalle_items_pedido'),
+    path('items_pedido/', views.ItemPedidoList.as_view(), name='lista_items_pedidos'),
+    path('items_pedido/<int:pk>', views.ItemPedidoDetail.as_view(), name='detalle_items_pedido'),
     path('pedidos/', views.PedidoList.as_view(), name='lista_pedidos'),
     path('pedidos/<int:pk>', views.PedidoDetail.as_view(), name='detalle_pedidos'),
 ]

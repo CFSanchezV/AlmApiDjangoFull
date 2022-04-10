@@ -102,13 +102,13 @@ class Local(models.Model):
     direccion = models.CharField(max_length=255, null=True)
     ciudad = models.CharField(max_length=255, null=True)
     telefono = models.CharField(max_length=255, null=True)
-    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='locales')
+    empresa = models.ForeignKey(Empresa, on_delete=models.PROTECT, related_name='locales')
 
     class Meta:
         db_table = 'local'
 
     def __str__(self):
-        return "Sede: {} de empresa {}".format(self.nombre_sede, self.empresa)
+        return "Sede: {} de la empresa: {}".format(self.nombre_sede, self.empresa)
 
 
 ## ENTIDADES
@@ -150,7 +150,6 @@ class Pedido(models.Model):
     estado_pedido = models.CharField(
         max_length=1, choices=ESTADO_PEDIDO_OPCIONES, default=ESTADO_PEDIDO_PENDIENTE)
     cliente = models.ForeignKey(Cliente, on_delete=models.PROTECT, related_name='pedidos_cliente')
-    empresa = models.ForeignKey(Empresa, on_delete=models.PROTECT, related_name='pedidos_empresa')
     local = models.ForeignKey(Local, on_delete=models.PROTECT, related_name='pedidos_local')
     fecha_entrega = models.DateTimeField(verbose_name='Fecha y hora de entrega', default=now)
     placed_at = models.DateTimeField(verbose_name='Creada en', auto_now_add=True)
@@ -159,7 +158,7 @@ class Pedido(models.Model):
         db_table = 'pedido'
 
     def __str__(self):
-        return "Pedido con fecha {} de {} para {}".format(self.fecha_entrega, self.empresa, self.cliente)
+        return "Pedido con fecha {}| de {}| para {}".format(self.fecha_entrega, self.local, self.cliente)
     
 
 class ItemPedido(models.Model):

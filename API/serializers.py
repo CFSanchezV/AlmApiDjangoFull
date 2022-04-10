@@ -76,15 +76,16 @@ class TelaSerializer(serializers.ModelSerializer):
 ## pedidos
 
 class PedidoSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Pedido
-        fields = ['fecha_entrega', 'cliente', 'empresa', 'local', 'estado_pedido']
-        
+        fields = ['fecha_entrega', 'cliente', 'local', 'estado_pedido']
     
+    #local = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
 class ItemPedidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemPedido
         fields = ['pedido', 'prenda', 'medida', 'cantidad', 'precio_unitario']
 
-    pedido = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    # pedido = serializers.PrimaryKeyRelatedField(many=True, read_only=True)

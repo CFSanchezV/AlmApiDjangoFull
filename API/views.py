@@ -181,8 +181,8 @@ class EmpresaDetail(RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, pk):
         empresa = get_object_or_404(Empresa, pk=pk)
-        if empresa.pedidos_empresa.count() > 0:
-            return Response({'error': 'Empresa no puede ser eliminada porque tiene un pedido asociado'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        if empresa.locales.count() > 0:
+            return Response({'error': 'Empresa no puede ser eliminada porque tiene locales asociados'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         empresa.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -254,11 +254,8 @@ class ItemPedidoDetail(RetrieveUpdateDestroyAPIView):
 
 
 class PedidoList(ListCreateAPIView):
-    queryset = Pedido.objects.select_related('cliente', 'empresa', 'local').prefetch_related('items_pedido').all()
+    queryset = Pedido.objects.select_related('cliente', 'local').prefetch_related('items_pedido').all()
     serializer_class = PedidoSerializer
-
-    def post(self, request):
-        pass
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -270,15 +267,11 @@ class PedidoDetail(RetrieveUpdateDestroyAPIView):
     def delete(self, request, pk):
         pedido = get_object_or_404(Pedido, pk=pk)
         if pedido.items_pedido.count() > 0:
-            return Response({'error': 'Pedido no puede ser eliminado porque tiene un item asociado'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        elif pedido.cliente is not None:
-            return Response({'error': 'Pedido no puede ser eliminado porque tiene un cliente asociado'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        elif pedido.empresa is not None:
-            return Response({'error': 'Pedido no puede ser eliminado porque tiene una empresa asociada'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            return Response({'error': 'Pedido no puede ser eliminado porque tiene ítems asociados'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         elif pedido.estado_pedido == Pedido.ESTADO_PEDIDO_CONFIRMADO:
             return Response({'error': 'Pedido no puede ser eliminado porque ha sido confirmado'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         elif pedido.estado_pedido == Pedido.ESTADO_PEDIDO_PENDIENTE:
-            return Response({'error': 'Pedido no puede ser eliminado porque tiene estado ''PENDIENTE''. '}, status=status.HTTP_405_METHOD_NOT_ALLOWED)            
+            return Response({'error': 'Pedido no puede ser eliminado porque tiene estado ''PENDIENTE''. Debe cambiarse a ''FALLIDO'''}, status=status.HTTP_405_METHOD_NOT_ALLOWED)            
         pedido.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
