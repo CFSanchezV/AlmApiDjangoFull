@@ -2,14 +2,16 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.cache import never_cache
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 import shutil
-from . utils import *
-from . models import ImageSegmentation, Measurement
-from . serializers import MeasurementSerializer, ImageSerializer
 
-# Create your views here.
+from . utils import *
+from . models import Cliente, ImageSegmentation, Measurement, Prenda, Empresa, Local, ItemPedido, Pedido
+from . serializers import ClienteSerializer, MeasurementSerializer, ImageSerializer
+
+# test
 def say_hello(request):
-    return render(request, 'hello.html', {'name': 'Chris'})
+    return render(request, 'hello.html', {'name': 'Christian'})
 
 
 @api_view(['GET'])
@@ -128,3 +130,37 @@ def first_measurement(request):
 
     serializer = MeasurementSerializer(measurement)
     return Response(serializer.data)
+
+
+## CLIENTES
+
+
+@api_view(['GET', 'POST'])
+def cliente_list(request, id):
+    cliente = get_object_or_404(Cliente, pk=id)
+    if request.method == 'GET':
+        serializer = ClienteSerializer(cliente)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = ClienteSerializer(cliente, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def cliente_detail(request, id):
+    cliente = get_object_or_404(Cliente, pk=id)
+    if request.method == 'GET':
+        serializer = ClienteSerializer(cliente)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = ClienteSerializer(cliente, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    elif request.method == 'DELETE':
+        if cliente.pedidos_cliente.count() > 0:
+            return Response({'error': 'Cliente no puede ser eliminado porque tiene un pedido asociado'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        cliente.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -52,18 +52,18 @@ class Cliente(models.Model):
         max_length=1, choices=TIPO_USUARIO_OPCIONES, default=TIPO_USUARIO_CLIENTE, editable=False)
     nombre = models.CharField(max_length=255, null=True)
     apellido = models.CharField(max_length=255, null=True)
-    email = models.EmailField(unique=True, null=True)
     dni = models.CharField(verbose_name='DNI', max_length=8, unique=True, validators=[alphanumeric])
+    email = models.EmailField(unique=True, null=True)
 
     class Meta:
         db_table = 'cliente'
 
 class ContactoCliente(models.Model):
+    cliente = models.OneToOneField(
+        Cliente, on_delete=models.CASCADE, primary_key=True)
     direccion = models.CharField(max_length=255, null=True)
     telefono = models.CharField(max_length=255, null=True)
     ciudad = models.CharField(max_length=255, null=True)
-    cliente = models.OneToOneField(
-        Cliente, on_delete=models.CASCADE, primary_key=True)
     
     class Meta:
         db_table = 'contacto_cliente'
@@ -87,11 +87,11 @@ class Empresa(models.Model):
         db_table = 'empresa'
 
 class Local(models.Model):
-    nombre_sede = models.CharField(verbose_name='Nombre de sucursal', max_length=255, null=True)
+    nombre_sede = models.CharField(verbose_name='Nombre de sede', max_length=255, null=True)
     direccion = models.CharField(max_length=255, null=True)
     ciudad = models.CharField(max_length=255, null=True)
     telefono = models.CharField(max_length=255, null=True)
-    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, primary_key=True)
+    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE, related_name='locales')
 
     class Meta:
         db_table = 'local'
@@ -111,8 +111,9 @@ class Prenda(models.Model):
     descripcion = models.TextField(null=True)
     precio = models.DecimalField(max_digits=6, decimal_places=2, null=True)
     inventario = models.IntegerField()
-    tela = models.ForeignKey(Tela, on_delete=models.PROTECT)
+    tela = models.ForeignKey(Tela, on_delete=models.PROTECT, related_name='telas')
     last_update = models.DateTimeField(auto_now=True)
+    empresas = models.ManyToManyField(Empresa, related_name='prendas') #many-many
 
     class Meta:
         db_table = 'prenda'
@@ -128,9 +129,9 @@ class Pedido(models.Model):
     ]
     estado_pedido = models.CharField(
         max_length=1, choices=ESTADO_PEDIDO_OPCIONES, default=ESTADO_PEDIDO_PENDIENTE)
-    cliente = models.ForeignKey(Cliente, on_delete=models.PROTECT)
-    empresa = models.ForeignKey(Empresa, on_delete=models.PROTECT)
-    local = models.ForeignKey(Local, on_delete=models.PROTECT)
+    cliente = models.ForeignKey(Cliente, on_delete=models.PROTECT, related_name='pedidos_cliente')
+    empresa = models.ForeignKey(Empresa, on_delete=models.PROTECT, related_name='pedidos_empresa')
+    local = models.ForeignKey(Local, on_delete=models.PROTECT, related_name='pedidos_local')
     fecha_entrega = models.DateTimeField(verbose_name='Fecha y hora de entrega', default=now)
     placed_at = models.DateTimeField(verbose_name='Creada en', auto_now_add=True)
 
@@ -139,9 +140,9 @@ class Pedido(models.Model):
     
 
 class ItemPedido(models.Model):
-    pedido = models.ForeignKey(Pedido, on_delete=models.PROTECT)
-    prenda = models.ForeignKey(Prenda, on_delete=models.PROTECT)
-    medidas = models.ForeignKey(Measurement, on_delete=models.PROTECT)
+    pedido = models.ForeignKey(Pedido, on_delete=models.PROTECT, related_name='items_pedido')
+    prenda = models.ForeignKey(Prenda, on_delete=models.PROTECT, related_name='prendas_pedido')
+    medida = models.ForeignKey(Measurement, on_delete=models.PROTECT, related_name='medidas_pedido')
     cantidad = models.PositiveSmallIntegerField(default=1)
     precio_unitario = models.DecimalField(max_digits=6, decimal_places=2)
 
