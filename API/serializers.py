@@ -47,8 +47,6 @@ class EmpresaSerializer(serializers.ModelSerializer):
 
     locales = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
-    
-
 class LocalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Local
@@ -57,18 +55,22 @@ class LocalSerializer(serializers.ModelSerializer):
     # empresa = serializers.PrimaryKeyRelatedField(read_only=True)
 
 
-## prenda
-
-class TelaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tela
-        fields = ['titulo', 'descripcion', 'img_url']
+## prendas
 
 class PrendaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prenda
-        fields = ['tela', 'titulo', 'descripcion', 'precio', 'inventario', 'last_update']
+        fields = ['titulo', 'descripcion', 'precio', 'inventario', 'tela', 'empresas']
 
+    # tela = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
+    # empresas = serializers.PrimaryKeyRelatedField(many=True)
+
+class TelaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tela
+        fields = ['titulo', 'descripcion', 'img_url', 'prenda']
+
+    prenda = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
 
 
 ## pedidos
@@ -76,9 +78,13 @@ class PrendaSerializer(serializers.ModelSerializer):
 class PedidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pedido
-        fields = ['estado_pedido', 'cliente', 'empresa', 'local', 'fecha_entrega', 'placed_at']
+        fields = ['fecha_entrega', 'cliente', 'empresa', 'local', 'estado_pedido']
+        
+    
 
 class ItemPedidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemPedido
-        fields = ['pedido', 'prenda', 'medidas', 'cantidad', 'precio_unitario']
+        fields = ['pedido', 'prenda', 'medida', 'cantidad', 'precio_unitario']
+
+    pedido = serializers.PrimaryKeyRelatedField(many=True, read_only=True)

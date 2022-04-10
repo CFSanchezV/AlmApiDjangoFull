@@ -36,6 +36,9 @@ class Measurement(models.Model):
     leg = models.FloatField(default=0)
     created_at = models.DateTimeField(verbose_name='Creado en', default=now, editable=False)
 
+def __str__(self):
+        return "Medida {} | cuello:{}, pecho:{}, cintura:{}, cadera:{}, altura:{}, brazos:{}, piernas:{}".format(self.uuid, self.neck, self.chest, self.waist, self.hip, self.height, self.arm, self.leg)
+
 
 ## RESTO DEL API
 
@@ -70,6 +73,9 @@ class ContactoCliente(models.Model):
     class Meta:
         db_table = 'contacto_cliente'
 
+    def __str__(self):
+        return "Info de contacto de: {}".format(self.cliente)
+
 
 ## EMPRESAS
 class Empresa(models.Model):
@@ -101,6 +107,9 @@ class Local(models.Model):
     class Meta:
         db_table = 'local'
 
+    def __str__(self):
+        return "Sede: {} de empresa {}".format(self.nombre_sede, self.empresa)
+
 
 ## ENTIDADES
 class Tela(models.Model):
@@ -111,24 +120,30 @@ class Tela(models.Model):
     class Meta:
         db_table = 'tela'
 
+    def __str__(self):
+        return "{}: {}".format(self.titulo, self.descripcion)
+
 class Prenda(models.Model):
     titulo = models.CharField(max_length=255, null=True)
     descripcion = models.TextField(null=True)
     precio = models.DecimalField(max_digits=6, decimal_places=2, null=True)
-    inventario = models.IntegerField()
-    tela = models.ForeignKey(Tela, on_delete=models.PROTECT, related_name='telas')
+    inventario = models.PositiveIntegerField(null=True)
+    tela = models.ForeignKey(Tela, on_delete=models.PROTECT, related_name='telas', null=True)
     last_update = models.DateTimeField(auto_now=True)
     empresas = models.ManyToManyField(Empresa, related_name='prendas') #many-many
 
     class Meta:
         db_table = 'prenda'
 
+    def __str__(self):
+        return "{}: {} | hecho(a) de {}".format(self.titulo, self.descripcion, self.tela)
+
 class Pedido(models.Model):
     ESTADO_PEDIDO_PENDIENTE = 'P'
     ESTADO_PEDIDO_CONFIRMADO = 'C'
     ESTADO_PEDIDO_FALLIDO = 'F'
     ESTADO_PEDIDO_OPCIONES = [
-        (ESTADO_PEDIDO_PENDIENTE, 'Pendinte'),
+        (ESTADO_PEDIDO_PENDIENTE, 'Pendiente'),
         (ESTADO_PEDIDO_CONFIRMADO, 'Confirmado'),
         (ESTADO_PEDIDO_FALLIDO, 'Fallido')
     ]
@@ -142,14 +157,21 @@ class Pedido(models.Model):
 
     class Meta:
         db_table = 'pedido'
+
+    def __str__(self):
+        return "Pedido con fecha {} de {} para {}".format(self.fecha_entrega, self.empresa, self.cliente)
     
 
 class ItemPedido(models.Model):
-    pedido = models.ForeignKey(Pedido, on_delete=models.PROTECT, related_name='items_pedido')
-    prenda = models.ForeignKey(Prenda, on_delete=models.PROTECT, related_name='prendas_pedido')
-    medida = models.ForeignKey(Measurement, on_delete=models.PROTECT, related_name='medidas_pedido')
+    pedido = models.ForeignKey(Pedido, on_delete=models.PROTECT, related_name='items_pedido', null=True)
+    prenda = models.ForeignKey(Prenda, on_delete=models.PROTECT, related_name='items_prenda')
+    medida = models.ForeignKey(Measurement, on_delete=models.PROTECT, related_name='items_medida', null=True)
     cantidad = models.PositiveSmallIntegerField(default=1)
     precio_unitario = models.DecimalField(max_digits=6, decimal_places=2)
 
     class Meta:
-        db_table = 'itemPedido'
+        db_table = 'item_pedido'
+        unique_together = [['pedido', 'prenda', 'medida']]
+
+    def __str__(self):
+        return "Item de {}".format(self.pedido)

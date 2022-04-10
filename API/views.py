@@ -6,8 +6,8 @@ from rest_framework import status
 import shutil
 
 from . utils import *
-from . models import Cliente, ImageSegmentation, Measurement, Prenda, Empresa, Local, ItemPedido, Pedido, ContactoCliente
-from . serializers import ClienteSerializer, EmpresaSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PedidoSerializer, ItemPedidoSerializer
+from . models import ImageSegmentation, Measurement, Prenda, Tela, Empresa, Local, Cliente, ContactoCliente, ItemPedido, Pedido
+from . serializers import ClienteSerializer, EmpresaSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PrendaSerializer, TelaSerializer, PedidoSerializer, ItemPedidoSerializer
 
 # test
 def say_hello(request):
@@ -205,4 +205,80 @@ class LocalDetail(RetrieveUpdateDestroyAPIView):
         local.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+## PRENDAS
+
+class PrendaList(ListCreateAPIView):
+    queryset = Prenda.objects.select_related('tela').prefetch_related('empresas').all()
+    serializer_class = PrendaSerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+class PrendaDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Prenda.objects.select_related('tela').prefetch_related('empresas').all()
+    serializer_class = PrendaSerializer
+
+    def delete(self, request, pk):
+        prenda = get_object_or_404(Prenda, pk=pk)
+        if prenda.items_prenda.count() > 0:
+            return Response({'error': 'Prenda no puede ser eliminada porque tiene un item de Pedido asociado'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        prenda.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class TelaList(ListCreateAPIView):
+    queryset = Tela.objects.all()
+    serializer_class = TelaSerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+class TelaDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Tela.objects.all()
+    serializer_class = TelaSerializer
+
+
+## PEDIDOS
+
+class ItemPedidoList(ListCreateAPIView):
+    queryset = ItemPedido.objects.all()
+    serializer_class = ItemPedidoSerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+class ItemPedidoDetail(RetrieveUpdateDestroyAPIView):
+    queryset = ItemPedido.objects.all()
+    serializer_class = ItemPedidoSerializer
+
+
+class PedidoList(ListCreateAPIView):
+    queryset = Pedido.objects.select_related('cliente', 'empresa', 'local').prefetch_related('items_pedido').all()
+    serializer_class = PedidoSerializer
+
+    def post(self, request):
+        pass
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+class PedidoDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Pedido.objects.all()
+    serializer_class = PedidoSerializer
+
+    def delete(self, request, pk):
+        pedido = get_object_or_404(Pedido, pk=pk)
+        if pedido.items_pedido.count() > 0:
+            return Response({'error': 'Pedido no puede ser eliminado porque tiene un item asociado'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        elif pedido.cliente is not None:
+            return Response({'error': 'Pedido no puede ser eliminado porque tiene un cliente asociado'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        elif pedido.empresa is not None:
+            return Response({'error': 'Pedido no puede ser eliminado porque tiene una empresa asociada'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        elif pedido.estado_pedido == Pedido.ESTADO_PEDIDO_CONFIRMADO:
+            return Response({'error': 'Pedido no puede ser eliminado porque ha sido confirmado'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        elif pedido.estado_pedido == Pedido.ESTADO_PEDIDO_PENDIENTE:
+            return Response({'error': 'Pedido no puede ser eliminado porque tiene estado ''PENDIENTE''. '}, status=status.HTTP_405_METHOD_NOT_ALLOWED)            
+        pedido.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
