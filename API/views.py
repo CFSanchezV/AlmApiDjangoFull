@@ -272,3 +272,21 @@ class PedidoDetail(RetrieveUpdateDestroyAPIView):
         pedido.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+### ___________________________________________________________ ###
+
+
+## CUSTOM VIEWS
+
+# prendas segun tela
+
+
+
+
+# pedidos segun cliente
+
+
+class PedidoClienteList(ListView):
+    model = Pedido
+    context_object_name = "pedido_cliente_list"
+    queryset = Pedido.objects.select_related('cliente_id')
