@@ -1,6 +1,5 @@
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.cache import never_cache
-from requests import request
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
