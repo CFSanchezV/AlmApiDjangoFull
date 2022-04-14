@@ -37,8 +37,8 @@ urlpatterns = [
     path('pedidos/', views.PedidoList.as_view(), name='lista_pedidos'),
     path('pedidos/<int:pk>', views.PedidoDetail.as_view(), name='detalle_pedidos'),
 
-    # CUSTOM
-    path('prendas_tela/<int:pk>', views.PrendasTelaList.as_view(), name='lista_prendas_tela'),
-    path('prendas_empresa/<int:pk>', views.PrendaEmpresasList.as_view(), name='lista_prendas_empresa'),
-    path('pedidos_cliente/<int:pk>', views.PedidoClienteList.as_view(), name='lista_pedidos_cliente'),
+    # __________CUSTOM URLS__________
+    path('prendas_tela/<int:id_tela>', views.prendas_por_tela, name='lista_prendas_tela'),
+    path('empresas_prenda/<int:id_prenda>', views.empresas_por_prenda, name='lista_empresas_prenda'),
+    path('pedidos_cliente/<int:id_cliente>', views.pedidos_por_cliente, name='lista_pedidos_cliente'),
 ]
