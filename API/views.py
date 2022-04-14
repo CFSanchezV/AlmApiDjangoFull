@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.cache import never_cache
+from requests import request
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -272,3 +273,41 @@ class PedidoDetail(RetrieveUpdateDestroyAPIView):
         pedido.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+# __________CUSTOM VIEWS__________
+
+from . serializers import PedidoClienteSerializer, EmpresaPrendaSerializer, PrendaTelaSerializer
+
+
+# prendas segun tela
+@api_view(['GET'])
+def prendas_por_tela(request, id_tela):
+    queryset = Prenda.objects.select_related('tela').filter(tela__id=id_tela)
+    #custom serializer
+    serializer = PrendaTelaSerializer(
+        queryset, many=True, context={'request': request}
+    )
+    return Response(serializer.data)
+
+
+# empresas segun prenda
+@api_view(['GET'])
+def empresas_por_prenda(request, id_prenda):
+    queryset = Empresa.objects.prefetch_related('prendas').filter(prendas__id=id_prenda)
+    #custom serializer
+    serializer = EmpresaPrendaSerializer(
+        queryset, many=True, context={'request': request}
+    )
+    return Response(serializer.data)
+
+
+# pedidos segun cliente
+@api_view(['GET'])
+def pedidos_por_cliente(request, id_cliente):
+    queryset = Pedido.objects.select_related(
+            'cliente', 'local').prefetch_related('items_pedido__prenda').filter(cliente__id=id_cliente).order_by('-placed_at')
+    #custom serializer
+    serializer = PedidoClienteSerializer(
+        queryset, many=True, context={'request': request}
+    )
+    return Response(serializer.data)

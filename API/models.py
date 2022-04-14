@@ -128,7 +128,7 @@ class Prenda(models.Model):
     descripcion = models.TextField(null=True)
     precio = models.DecimalField(max_digits=6, decimal_places=2, null=True)
     inventario = models.PositiveIntegerField(null=True)
-    tela = models.ForeignKey(Tela, on_delete=models.PROTECT, related_name='telas', null=True)
+    tela = models.ForeignKey(Tela, on_delete=models.PROTECT, related_name='prendas', null=True)
     last_update = models.DateTimeField(auto_now=True)
     empresas = models.ManyToManyField(Empresa, related_name='prendas') #many-many
 
