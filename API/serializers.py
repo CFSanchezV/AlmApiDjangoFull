@@ -94,17 +94,17 @@ class ItemPedidoSerializer(serializers.ModelSerializer):
 # __________CUSTOM SERIALIZERS__________
 
 class PedidoClienteSerializer(serializers.ModelSerializer):
-    cliente = ClienteSerializer(source='cliente', many=False)
+    cliente = ClienteSerializer(many=False)
 
     class Meta:
         model = Pedido
         fields = ['fecha_entrega', 'cliente', 'local', 'estado_pedido']
     
-    local = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    # local = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
 
 class PrendaEmpresaSerializer(serializers.ModelSerializer):
-    empresas = EmpresaSerializer(source='empresas', many=True)
+    empresas = EmpresaSerializer(many=True)
 
     class Meta:
         model = Prenda
@@ -112,7 +112,7 @@ class PrendaEmpresaSerializer(serializers.ModelSerializer):
 
 
 class PrendaTelaSerializer(serializers.ModelSerializer):
-    tela = TelaSerializer(source='tela', many=False)
+    tela = TelaSerializer(many=False)
 
     class Meta:
         model = Prenda
