@@ -278,15 +278,27 @@ class PedidoDetail(RetrieveUpdateDestroyAPIView):
 
 ## CUSTOM VIEWS
 
+from rest_framework.generics import ListAPIView
+from . serializers import PedidoClienteSerializer, PrendaEmpresaSerializer, PrendaTelaSerializer
+
+# empresas segun prenda
+class PrendaEmpresasList(ListAPIView):
+    #custom serializer?
+    serializer_class = PrendaEmpresaSerializer
+    queryset = Pedido.objects.prefetch_related('empresas')
+
+
 # prendas segun tela
-
-
+class PrendasTelaList(ListAPIView):
+    #custom serializer
+    serializer_class = PrendaTelaSerializer
+    queryset = Pedido.objects.select_related('telas').all()
 
 
 # pedidos segun cliente
-
-
-class PedidoClienteList(ListView):
-    model = Pedido
-    context_object_name = "pedido_cliente_list"
-    queryset = Pedido.objects.select_related('cliente_id')
+class PedidoClienteList(ListAPIView):
+    #custom serializer
+    serializer_class = PedidoClienteSerializer
+    # pedidos del cliente incluyendo los ítems (y la prenda asociada), en orden de fecha desc | eager
+    queryset = Pedido.objects.select_related(
+        'cliente').prefetch_related('items_pedido__prenda').order_by('-placed_at').all()
