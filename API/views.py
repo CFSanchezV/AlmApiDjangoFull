@@ -9,7 +9,7 @@ import shutil
 from . utils import *
 from . models import ImageSegmentation, Measurement, Prenda, Tela, Empresa, Local, Cliente, ContactoCliente, ItemPedido, Pedido
 from . serializers import ClienteSerializer, EmpresaSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PrendaSerializer, TelaSerializer, PedidoSerializer, ItemPedidoSerializer
-
+from ALMapi.settings import BASE_DIR
 
 # UTILITIES REQUEST HANDLERS
 
@@ -32,7 +32,7 @@ def run_measureme_tool(request):
     for img_name in images:
         modified_data = modify_input_for_multiple_files(property_id,
                                                         img_name)
-        image_serializer = ImageSerializer(data=modified_data)
+        image_serializer = ImageSerializer(data=modified_data, context={'request': request})
         if image_serializer.is_valid():
             image_serializer.save()
             arr.append(image_serializer.data)
@@ -41,8 +41,10 @@ def run_measureme_tool(request):
             return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     if flag == 1:
-        frontimg_path = os.path.relpath(arr[0]['image'], '/')
-        sideimg_path = os.path.relpath(arr[1]['image'], '/')
+        frontimg_path = arr[0]['image']
+        sideimg_path = arr[1]['image']
+        # frontimg_path = os.path.relpath(arr[0]['image'], '/')
+        # sideimg_path = os.path.relpath(arr[1]['image'], '/')
         front_image = ImageSegmentation.objects.create(front_input_image=frontimg_path, name='image_{:02d}'.format(int(uuid.uuid1() )))
         side_image = ImageSegmentation.objects.create(side_input_image=sideimg_path, name='image_{:02d}'.format(int(uuid.uuid1() )))
         runner = RunSegmentationInference(front_image, side_image)

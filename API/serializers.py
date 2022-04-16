@@ -15,9 +15,8 @@ def validate_extension(filename):
     extension = os.path.splitext(filename)[1].replace(".", "")
     if extension.lower() not in ALLOWED_IMAGE_EXTENSIONS:
         raise serializers.ValidationError(
-            (f"Invalid uploaded file type: {filename}"),
-            code='invalid',
-        )
+            (f"Tipo de archivo subido no válido: {filename}"),
+            code='invalid')
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,14 +24,22 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = ('property_id', 'image')
 
     def validate(self, data):
+        # list of keys
+        keys = list(dict(self.context['request'].data).keys())
+        for key in keys:
+            if key != 'image' or not isinstance(key, str):
+                raise serializers.ValidationError(f"Llave inválida: {key}",
+                code='invalid')
+        # list of images
         images = dict((self.context['request'].data).lists())['image']
         # validate quantity of files with key: "image"
         if len(images) != 2:
-            return serializers.ValidationError("cantidad de imagenes distinta a 2")
-        # validate file type
+            raise serializers.ValidationError(
+                ("Recuento de archivos subidos no válido"),
+                code='invalid')
+        # validate file types
         for img in images:
             validate_extension(img.name)
-
         return data
         
 
