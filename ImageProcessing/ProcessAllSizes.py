@@ -404,38 +404,43 @@ class IMGSProcessor():
             img_front = cv2.cvtColor(img_front, cv2.COLOR_RGB2BGR)
             
             # GET LANDMARKS
-            landmarks = results.pose_landmarks.landmark
-            l_shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
-            r_shoulder = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
-            l_elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
-            r_elbow = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
-            l_wrist = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x,landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
-            r_wrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
-            l_hip = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
-            r_hip = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
-            l_knee = [landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].x,landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y]
-            r_knee = [landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].y]
-            l_ankle = [landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x,landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y]
-            r_ankle = [landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].y]
-            l_heel = [landmarks[mp_pose.PoseLandmark.LEFT_HEEL.value].x,landmarks[mp_pose.PoseLandmark.LEFT_HEEL.value].y]
-            r_heel = [landmarks[mp_pose.PoseLandmark.RIGHT_HEEL.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_HEEL.value].y]
-            nose = [landmarks[mp_pose.PoseLandmark.NOSE.value].x,landmarks[mp_pose.PoseLandmark.NOSE.value].y]
+            try:
 
-            # Find positions
-            neckY = MUtils.find_FrontNeckY(nose, l_shoulder, w, h)
-            LwaistY, RwaistY = MUtils.find_Front_WaistY(l_shoulder, r_shoulder, l_hip, r_hip,  w, h)
-            hipY = MUtils.find_HipY(l_hip, w, h)
-            footY = MUtils.find_FootY(l_heel, w, h)
+                landmarks = results.pose_landmarks.landmark
+                l_shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
+                r_shoulder = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+                l_elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
+                r_elbow = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
+                l_wrist = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x,landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
+                r_wrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
+                l_hip = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
+                r_hip = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
+                l_knee = [landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].x,landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y]
+                r_knee = [landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].y]
+                l_ankle = [landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x,landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y]
+                r_ankle = [landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].y]
+                l_heel = [landmarks[mp_pose.PoseLandmark.LEFT_HEEL.value].x,landmarks[mp_pose.PoseLandmark.LEFT_HEEL.value].y]
+                r_heel = [landmarks[mp_pose.PoseLandmark.RIGHT_HEEL.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_HEEL.value].y]
+                nose = [landmarks[mp_pose.PoseLandmark.NOSE.value].x,landmarks[mp_pose.PoseLandmark.NOSE.value].y]
 
-            # Calculate lengths, chest/leg/arm sizes
-            chest_dist_front = MUtils.calculate_Chest(l_elbow, l_shoulder, r_elbow, r_shoulder, w, h)
-            
-            l_arm = MUtils.calculate_limb_dist(l_shoulder, l_elbow, l_wrist, w, h)
-            r_arm = MUtils.calculate_limb_dist(r_shoulder, r_elbow, r_wrist, w, h)
-            l_leg = MUtils.calculate_limb_dist(l_hip, l_knee, l_ankle, w, h, d=l_heel)
-            r_leg = MUtils.calculate_limb_dist(r_hip, r_knee, r_ankle, w, h, d=r_heel)
+                # Find positions
+                neckY = MUtils.find_FrontNeckY(nose, l_shoulder, w, h)
+                LwaistY, RwaistY = MUtils.find_Front_WaistY(l_shoulder, r_shoulder, l_hip, r_hip,  w, h)
+                hipY = MUtils.find_HipY(l_hip, w, h)
+                footY = MUtils.find_FootY(l_heel, w, h)
 
-        return PositionsFront(neckY, LwaistY, RwaistY, hipY, footY, chest_dist_front, l_arm, r_arm, l_leg, r_leg)
+                # Calculate lengths, chest/leg/arm sizes
+                chest_dist_front = MUtils.calculate_Chest(l_elbow, l_shoulder, r_elbow, r_shoulder, w, h)
+                
+                l_arm = MUtils.calculate_limb_dist(l_shoulder, l_elbow, l_wrist, w, h)
+                r_arm = MUtils.calculate_limb_dist(r_shoulder, r_elbow, r_wrist, w, h)
+                l_leg = MUtils.calculate_limb_dist(l_hip, l_knee, l_ankle, w, h, d=l_heel)
+                r_leg = MUtils.calculate_limb_dist(r_hip, r_knee, r_ankle, w, h, d=r_heel)
+
+                return PositionsFront(neckY, LwaistY, RwaistY, hipY, footY, chest_dist_front, l_arm, r_arm, l_leg, r_leg)
+            except:
+                pass
+
 
     def find_positions_side(self):
         with mp_pose.Pose(static_image_mode=True, min_detection_confidence=0.5, min_tracking_confidence=0.5) as poser:
@@ -449,22 +454,27 @@ class IMGSProcessor():
             img_side = cv2.cvtColor(img_side, cv2.COLOR_RGB2BGR)
             
             # GET LANDMARKS
-            landmarks = results.pose_landmarks.landmark
-            l_shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
-            r_shoulder = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
-            l_elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
-            l_hip = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
-            r_hip = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
-            nose = [landmarks[mp_pose.PoseLandmark.NOSE.value].x,landmarks[mp_pose.PoseLandmark.NOSE.value].y]
-            mouth_r = [landmarks[mp_pose.PoseLandmark.MOUTH_RIGHT.value].x,landmarks[mp_pose.PoseLandmark.MOUTH_RIGHT.value].y]
+            try:
+                landmarks = results.pose_landmarks.landmark
+                l_shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
+                r_shoulder = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+                l_elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
+                l_hip = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
+                r_hip = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
+                nose = [landmarks[mp_pose.PoseLandmark.NOSE.value].x,landmarks[mp_pose.PoseLandmark.NOSE.value].y]
+                mouth_r = [landmarks[mp_pose.PoseLandmark.MOUTH_RIGHT.value].x,landmarks[mp_pose.PoseLandmark.MOUTH_RIGHT.value].y]
 
-            # Find positions
-            LneckY, RneckY = MUtils.find_SideNeckY(nose, l_shoulder, mouth_r, w, h)
-            chestY = MUtils.find_ChestY(l_elbow, l_shoulder, w, h)
-            waistY = MUtils.find_Side_WaistY(l_shoulder, r_shoulder, l_hip, r_hip,  w, h)
-            hipY = MUtils.find_HipY(l_hip, w, h)
+                # Find positions
+                LneckY, RneckY = MUtils.find_SideNeckY(nose, l_shoulder, mouth_r, w, h)
+                chestY = MUtils.find_ChestY(l_elbow, l_shoulder, w, h)
+                waistY = MUtils.find_Side_WaistY(l_shoulder, r_shoulder, l_hip, r_hip,  w, h)
+                hipY = MUtils.find_HipY(l_hip, w, h)
 
-        return PositionsSide(LneckY, RneckY, chestY, waistY, hipY)
+                return PositionsSide(LneckY, RneckY, chestY, waistY, hipY)
+
+            except:
+                pass
+
 
     def find_contours_front(self):
         img_in = self.frontIMG

@@ -8,8 +8,8 @@ import uuid
 class ImageSegmentation(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(verbose_name='nombre', max_length=255, null=True, blank=True)
-    front_input_image = models.FileField(verbose_name='Imagen fontal', upload_to=get_output_image_path, null=True, blank=True)
-    side_input_image = models.FileField(verbose_name='Imagen de perfil', upload_to=get_output_image_path, null=True, blank=True)
+    front_input_image = models.FileField(verbose_name='Imagen fontal', upload_to=get_output_image_path, null=True, blank=True, max_length=255)
+    side_input_image = models.FileField(verbose_name='Imagen de perfil', upload_to=get_output_image_path, null=True, blank=True, max_length=255)
     verified = models.BooleanField(verbose_name='Verificado', default=False)
     created_at = models.DateTimeField(verbose_name='Creado en', auto_now_add=True)
     updated_at = models.DateTimeField(verbose_name='Actualizado en', auto_now=True)

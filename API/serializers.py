@@ -1,15 +1,47 @@
 from rest_framework import serializers
 from . models import ImageSegmentation, Image, ItemPedido, Measurement, Cliente, Empresa, Local,  Pedido, ItemPedido, Prenda, Tela, ContactoCliente
+import os
 
+# placeholder for ImageSegmentationSerializer
 class OutputImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ImageSegmentation
         fields = ('uuid', 'name', 'front_input_image', 'side_input_image', 'verified', 'created_at', 'updated_at')
 
+
+ALLOWED_IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "bmp"]
+
+def validate_extension(filename):
+    extension = os.path.splitext(filename)[1].replace(".", "")
+    if extension.lower() not in ALLOWED_IMAGE_EXTENSIONS:
+        raise serializers.ValidationError(
+            (f"Tipo de archivo subido no válido: {filename}"),
+            code='invalid')
+
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
         fields = ('property_id', 'image')
+
+    def validate(self, data):
+        # list of keys
+        keys = list(dict(self.context['request'].data).keys())
+        for key in keys:
+            if key != 'image' or not isinstance(key, str):
+                raise serializers.ValidationError(f"Llave inválida: {key}",
+                code='invalid')
+        # list of images
+        images = dict((self.context['request'].data).lists())['image']
+        # validate quantity of files with key: "image"
+        if len(images) != 2:
+            raise serializers.ValidationError(
+                ("Recuento de archivos subidos no válido"),
+                code='invalid')
+        # validate file types
+        for img in images:
+            validate_extension(img.name)
+        return data
+
 
 class MeasurementSerializer(serializers.ModelSerializer):
     class Meta:
