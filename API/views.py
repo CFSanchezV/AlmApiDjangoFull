@@ -26,17 +26,19 @@ def run_measureme_tool(request):
 
     # converts querydict to original dict
     images = dict((request.data).lists())['image']
+    # validated data flag
     flag = 1
     arr = []
     for img_name in images:
         modified_data = modify_input_for_multiple_files(property_id,
                                                         img_name)
-        file_serializer = ImageSerializer(data=modified_data)
-        if file_serializer.is_valid():
-            file_serializer.save()
-            arr.append(file_serializer.data)
+        image_serializer = ImageSerializer(data=modified_data)
+        if image_serializer.is_valid():
+            image_serializer.save()
+            arr.append(image_serializer.data)
         else:
             flag = 0
+            return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     if flag == 1:
         frontimg_path = os.path.relpath(arr[0]['image'], '/')
