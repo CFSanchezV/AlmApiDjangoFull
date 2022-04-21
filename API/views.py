@@ -7,8 +7,8 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 import shutil
 
 from . utils import *
-from . models import ImageSegmentation, Measurement, Prenda, Tela, Empresa, Local, Cliente, ContactoCliente, ItemPedido, Pedido
-from . serializers import ClienteSerializer, EmpresaSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PrendaSerializer, TelaSerializer, PedidoSerializer, ItemPedidoSerializer
+from . models import ImageSegmentation, Measurement, Prenda, Tela, Empresa, Local, Cliente, ContactoCliente, ItemPedido, Pedido, Medida
+from . serializers import ClienteSerializer, EmpresaSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PrendaSerializer, TelaSerializer, PedidoSerializer, ItemPedidoSerializer, MedidaSerializer
 from ALMapi.settings import BASE_DIR
 
 # UTILITIES REQUEST HANDLERS
@@ -63,6 +63,7 @@ def run_measureme_tool(request):
         measure.leg = measurements.MFront.FLlegDist
         measure.save()
 
+        # returns results in Measurements
         serializer = MeasurementSerializer(measure)
         return Response(serializer.data)
 
@@ -125,10 +126,10 @@ class MeasurementDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = MeasurementSerializer
 
     def delete(self, request, pk):
-        medida = get_object_or_404(Measurement, pk=pk)
-        if medida.items_medida.count() > 0:
+        measurement = get_object_or_404(Measurement, pk=pk)
+        if measurement.items_medida.count() > 0:
             return Response({'error': 'Las medidas no pueden ser eliminadas porque tiene ítems asociados.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        medida.delete()
+        measurement.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -277,6 +278,20 @@ class PedidoDetail(RetrieveUpdateDestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+## LAS MEDIDAS VERDADERAS
+
+class MedidaList(ListCreateAPIView):
+    queryset = Medida.objects.select_related('cliente').all()
+    serializer_class = MedidaSerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+class MedidaDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Medida.objects.select_related('cliente').all()
+    serializer_class = MedidaSerializer
+
+
 # __________CUSTOM VIEWS__________
 
 from . serializers import PedidoClienteSerializer, EmpresaPrendaSerializer, PrendaTelaSerializer
@@ -314,3 +329,23 @@ def pedidos_por_cliente(request, id_cliente):
         queryset, many=True, context={'request': request}
     )
     return Response(serializer.data)
+
+
+
+## VIEWS DE AUTENTICACION
+
+@api_view(['POST'])
+def register(request):
+    pass
+
+
+@api_view(['POST'])
+def login(request):
+    pass
+
+
+
+## Guardar medidas asociadas
+@api_view(['POST'])
+def save_user_measurements(request):
+    pass
