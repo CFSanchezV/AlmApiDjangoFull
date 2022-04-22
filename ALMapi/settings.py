@@ -14,7 +14,6 @@ from pathlib import Path
 import os
 
 # deployment
-import dj_database_url
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -102,9 +101,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'ALMTextilDb',
         'USER': 'postgres',
-        'PASSWORD': '',
+        'PASSWORD': 'christian455',
         'HOST': 'localhost',
-        'PORT': ''
+        'PORT': '5432'
     }
 }
 
