@@ -9,7 +9,7 @@ operations = [
 	INSERT INTO prendas
 	VALUES ('','','','')
 	""","""
-    INSERT INTO prendas
+    INSERT INTO telas
 	VALUES ('','','','')
     """)
 

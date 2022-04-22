@@ -33,7 +33,6 @@ class RunSegmentationInference():
         self.side_base_path = 'media/Input_image/'
 
         _, self.front_filename = os.path.split(self.front_image.front_input_image.path)
-        
         self.front_sample_image = SegmentationSample(root_dir = self.front_base_path, image_file=self.front_filename, device='cuda')
         
         _, self.side_filename = os.path.split(self.side_image.side_input_image.path)
