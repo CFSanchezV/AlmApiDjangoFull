@@ -143,8 +143,8 @@ class Local(models.Model):
 ## ENTIDADES
 class Tela(models.Model):
     titulo = models.CharField(max_length=255, null=True)
-    descripcion = models.TextField(null=True)
-    url_imagen = models.TextField()
+    descripcion = models.TextField(verbose_name='Descripcion', null=True)
+    url_imagen = models.URLField(verbose_name='url_imagen')
 
     class Meta:
         db_table = 'tela'
@@ -155,7 +155,7 @@ class Tela(models.Model):
 
 class Prenda(models.Model):
     titulo = models.CharField(max_length=255, null=True)
-    descripcion = models.TextField(null=True)
+    descripcion = models.TextField(verbose_name='Descripcion', null=True)
     precio_sugerido = models.DecimalField(max_digits=6, decimal_places=2, null=True)
     tela = models.ForeignKey(Tela, on_delete=models.PROTECT, related_name='prendas', null=True)
     creado_en = models.DateTimeField(verbose_name='Creada en', auto_now_add=True)
