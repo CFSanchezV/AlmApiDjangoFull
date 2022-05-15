@@ -7,9 +7,9 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 import shutil
 
 from . utils import *
-from . models import ImageSegmentation, Measurement, Prenda, Tela, Empresa, Local, Cliente, ContactoCliente, ItemPedido, Pedido
-from . serializers import ClienteSerializer, EmpresaSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PrendaSerializer, TelaSerializer, PedidoSerializer, ItemPedidoSerializer
-
+from . models import ImageSegmentation, Measurement, Prenda, Tela, Empresa, Local, Cliente, ContactoCliente, ItemPedido, Pedido, Medida
+from . serializers import ClienteSerializer, EmpresaSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PrendaSerializer, TelaSerializer, PedidoSerializer, ItemPedidoSerializer, MedidaSerializer
+from ALMapi.settings import BASE_DIR
 
 # UTILITIES REQUEST HANDLERS
 
@@ -26,21 +26,25 @@ def run_measureme_tool(request):
 
     # converts querydict to original dict
     images = dict((request.data).lists())['image']
+    # validated data flag
     flag = 1
     arr = []
     for img_name in images:
         modified_data = modify_input_for_multiple_files(property_id,
                                                         img_name)
-        file_serializer = ImageSerializer(data=modified_data)
-        if file_serializer.is_valid():
-            file_serializer.save()
-            arr.append(file_serializer.data)
+        image_serializer = ImageSerializer(data=modified_data, context={'request': request})
+        if image_serializer.is_valid():
+            image_serializer.save()
+            arr.append(image_serializer.data)
         else:
             flag = 0
+            return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     if flag == 1:
-        frontimg_path = os.path.relpath(arr[0]['image'], '/')
-        sideimg_path = os.path.relpath(arr[1]['image'], '/')
+        frontimg_path = arr[0]['image']
+        sideimg_path = arr[1]['image']
+        # frontimg_path = os.path.relpath(arr[0]['image'], '/')
+        # sideimg_path = os.path.relpath(arr[1]['image'], '/')
         front_image = ImageSegmentation.objects.create(front_input_image=frontimg_path, name='image_{:02d}'.format(int(uuid.uuid1() )))
         side_image = ImageSegmentation.objects.create(side_input_image=sideimg_path, name='image_{:02d}'.format(int(uuid.uuid1() )))
         runner = RunSegmentationInference(front_image, side_image)
@@ -59,6 +63,7 @@ def run_measureme_tool(request):
         measure.leg = measurements.MFront.FLlegDist
         measure.save()
 
+        # returns results in Measurements
         serializer = MeasurementSerializer(measure)
         return Response(serializer.data)
 
@@ -121,10 +126,10 @@ class MeasurementDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = MeasurementSerializer
 
     def delete(self, request, pk):
-        medida = get_object_or_404(Measurement, pk=pk)
-        if medida.items_medida.count() > 0:
+        measurement = get_object_or_404(Measurement, pk=pk)
+        if measurement.items_medida.count() > 0:
             return Response({'error': 'Las medidas no pueden ser eliminadas porque tiene ítems asociados.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        medida.delete()
+        measurement.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -273,6 +278,20 @@ class PedidoDetail(RetrieveUpdateDestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+## LAS MEDIDAS VERDADERAS
+
+class MedidaList(ListCreateAPIView):
+    queryset = Medida.objects.select_related('cliente').all()
+    serializer_class = MedidaSerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+class MedidaDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Medida.objects.select_related('cliente').all()
+    serializer_class = MedidaSerializer
+
+
 # __________CUSTOM VIEWS__________
 
 from . serializers import PedidoClienteSerializer, EmpresaPrendaSerializer, PrendaTelaSerializer
@@ -310,3 +329,51 @@ def pedidos_por_cliente(request, id_cliente):
         queryset, many=True, context={'request': request}
     )
     return Response(serializer.data)
+
+
+
+## VIEWS CON AUTENTICACION
+
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
+from . serializers import ClienteUserSerializer, EmpresaUserSerializer
+from rest_framework.generics import UpdateAPIView
+
+class RegistrarCliente(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Cliente.objects.all()
+    serializer_class = ClienteUserSerializer
+    lookup_field = 'pk'
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object() #cliente obj
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Actualizacion correcta", "Cliente": serializer.data})
+        else:
+            return Response({"message": "Actualizacion fallida", "Detalles": serializer.errors})
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+
+class RegistrarEmpresa(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Empresa.objects.all()
+    serializer_class = EmpresaUserSerializer
+    lookup_field = 'pk'
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object() #empresa obj
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Actualizacion correcta", "Empresa": serializer.data})
+        else:
+            return Response({"message": "Actualizacion fallida", "Detalles": serializer.errors})
+
+    def get_serializer_context(self):
+        return {'request': self.request}

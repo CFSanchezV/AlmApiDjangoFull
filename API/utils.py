@@ -29,13 +29,17 @@ class RunSegmentationInference():
 
         self.output_folder = 'media/Output_image/'
 
-        self.front_base_path, self.front_filename = os.path.split(self.front_image.front_input_image.path)
+        self.front_base_path = 'media/Input_image/'
+        self.side_base_path = 'media/Input_image/'
+
+        _, self.front_filename = os.path.split(self.front_image.front_input_image.path)
+
         self.front_sample_image = SegmentationSample(root_dir = self.front_base_path, image_file=self.front_filename, device='cuda')
         
-        self.side_base_path, self.side_filename = os.path.split(self.side_image.side_input_image.path)
+        _, self.side_filename = os.path.split(self.side_image.side_input_image.path)
         self.side_sample_image = SegmentationSample(root_dir = self.side_base_path, image_file = self.side_filename, device='cuda')
 
-        self.model = SemanticSeg(pretrained=True, device='cuda')
+        self.model = SemanticSeg(pretrained=True, device='cpu')
 
         self.updated_front_image = None
         self.updated_side_image = None

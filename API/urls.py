@@ -17,6 +17,9 @@ urlpatterns = [
     path('medidas/', views.MeasurementList.as_view(), name='lista_medidas'),
     path('medidas/<uuid:pk>', views.MeasurementDetail.as_view(), name='detalle_medida'),
 
+    path('medidas_clientes/', views.MedidaList.as_view(), name='medidas_lista'),
+    path('medidas_clientes/<int:pk>', views.MedidaDetail.as_view(), name='medida_detalle'),
+
     path('clientes/', views.ClienteList.as_view(), name='lista_clientes'),
     path('clientes/<int:pk>', views.ClienteDetail.as_view(), name='detalle_cliente'),
     path('contactos/', views.ContactoClienteList.as_view(), name='lista_contactos'),
@@ -41,4 +44,8 @@ urlpatterns = [
     path('prendas_tela/<int:id_tela>', views.prendas_por_tela, name='lista_prendas_tela'),
     path('empresas_prenda/<int:id_prenda>', views.empresas_por_prenda, name='lista_empresas_prenda'),
     path('pedidos_cliente/<int:id_cliente>', views.pedidos_por_cliente, name='lista_pedidos_cliente'),
+
+    # __________Association urls__________
+    path('registrar_cliente/<int:pk>', views.RegistrarCliente.as_view(), name='registrar_cliente'),
+    path('registrar_empresa/<int:pk>', views.RegistrarEmpresa.as_view(), name='registrar_empresa'),
 ]
