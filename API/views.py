@@ -332,20 +332,48 @@ def pedidos_por_cliente(request, id_cliente):
 
 
 
-## VIEWS DE AUTENTICACION
+## VIEWS CON AUTENTICACION
 
-@api_view(['POST'])
-def register(request):
-    pass
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
+from . serializers import ClienteUserSerializer, EmpresaUserSerializer
+from rest_framework.generics import UpdateAPIView
+
+class RegistrarCliente(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Cliente.objects.all()
+    serializer_class = ClienteUserSerializer
+    lookup_field = 'pk'
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object() #cliente obj
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Actualizacion correcta", "Cliente": serializer.data})
+        else:
+            return Response({"message": "Actualizacion fallida", "Detalles": serializer.errors})
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 
-@api_view(['POST'])
-def login(request):
-    pass
+class RegistrarEmpresa(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Empresa.objects.all()
+    serializer_class = EmpresaUserSerializer
+    lookup_field = 'pk'
 
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object() #empresa obj
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
 
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Actualizacion correcta", "Empresa": serializer.data})
+        else:
+            return Response({"message": "Actualizacion fallida", "Detalles": serializer.errors})
 
-## Guardar medidas asociadas
-@api_view(['POST'])
-def save_user_measurements(request):
-    pass
+    def get_serializer_context(self):
+        return {'request': self.request}

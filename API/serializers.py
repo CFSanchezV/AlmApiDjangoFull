@@ -184,3 +184,35 @@ class PedidoClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pedido
         fields = ['fecha_entrega', 'cliente', 'local', 'estado_pedido']
+
+
+### EXTRA: Assigns user IDs to cliente/empresa
+
+class ClienteUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cliente
+        fields = ['id', 'nombre', 'user']
+
+    def update(self, instance, validated_data):
+        user = self.context['request'].user
+        if user.pk != validated_data.get('user', instance.user).pk:
+            raise serializers.ValidationError({"authorize": "No tiene permisos para este usuario."})
+
+        instance.user = validated_data.get('user', instance.user)
+        instance.save()
+        return instance
+
+
+class EmpresaUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Empresa
+        fields = ['id', 'nombre', 'user']
+
+    def update(self, instance, validated_data):
+        user = self.context['request'].user
+        if user.pk != validated_data.get('user', instance.user).pk:
+            raise serializers.ValidationError({"authorize": "No tiene permisos para este usuario."})
+
+        instance.user = validated_data.get('user', instance.user)
+        instance.save()
+        return instance
