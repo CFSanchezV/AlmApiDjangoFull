@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils.timezone import now
 from API.utils import get_input_image_path, get_output_image_path
 from django.core.validators import RegexValidator
@@ -61,6 +62,8 @@ class Cliente(models.Model):
     dni = models.CharField(verbose_name='DNI', max_length=8, unique=True, validators=[alphanumeric])
     email = models.EmailField(unique=True, null=True)
 
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
+
     class Meta:
         db_table = 'cliente'
 
@@ -70,7 +73,7 @@ class Cliente(models.Model):
 class ContactoCliente(models.Model):
     direccion = models.CharField(max_length=255, null=True)
     telefono = models.CharField(max_length=255, null=True)
-    ciudad = models.CharField(max_length=255, null=True)
+    distrito = models.CharField(max_length=255, null=True)
     cliente = models.OneToOneField(Cliente, null=True, on_delete=models.SET_NULL, related_name='contacto')
     
     class Meta:
@@ -115,6 +118,8 @@ class Empresa(models.Model):
     ruc = models.CharField(max_length=11, unique=True, validators=[alphanumeric])
     email = models.EmailField(unique=True, null=True)
 
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
+
     class Meta:
         db_table = 'empresa'
 
@@ -124,7 +129,7 @@ class Empresa(models.Model):
 class Local(models.Model):
     nombre_sede = models.CharField(verbose_name='Nombre de sede', max_length=255, null=True)
     direccion = models.CharField(max_length=255, null=True)
-    ciudad = models.CharField(max_length=255, null=True)
+    distrito = models.CharField(max_length=255, null=True)
     telefono = models.CharField(max_length=255, null=True)
     empresa = models.ForeignKey(Empresa, on_delete=models.PROTECT, related_name='locales')
 
@@ -138,8 +143,8 @@ class Local(models.Model):
 ## ENTIDADES
 class Tela(models.Model):
     titulo = models.CharField(max_length=255, null=True)
-    descripcion = models.TextField(null=True)
-    url_imagen = models.TextField()
+    descripcion = models.TextField(verbose_name='Descripcion', null=True)
+    url_imagen = models.URLField(verbose_name='url_imagen')
 
     class Meta:
         db_table = 'tela'
@@ -150,11 +155,11 @@ class Tela(models.Model):
 
 class Prenda(models.Model):
     titulo = models.CharField(max_length=255, null=True)
-    descripcion = models.TextField(null=True)
+    descripcion = models.TextField(verbose_name='Descripcion', null=True)
     precio_sugerido = models.DecimalField(max_digits=6, decimal_places=2, null=True)
     tela = models.ForeignKey(Tela, on_delete=models.PROTECT, related_name='prendas', null=True)
     creado_en = models.DateTimeField(verbose_name='Creada en', auto_now_add=True)
-    empresas = models.ManyToManyField(Empresa, related_name='prendas', through='PrendaEmpresa') #many-many
+    empresas = models.ManyToManyField(Empresa, related_name='prendas', db_table='prenda_empresa') #many-many
 
     class Meta:
         db_table = 'prenda'
@@ -164,17 +169,17 @@ class Prenda(models.Model):
 
 
 # clase de asociacion custom muchos a muchos
-class PrendaEmpresa(models.Model):
-    prenda = models.ForeignKey(Prenda, on_delete=models.CASCADE)
-    empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
-    disponibilidad = models.BooleanField(default=True)
+# class PrendaEmpresa(models.Model):
+#     prenda = models.ForeignKey(Prenda, on_delete=models.CASCADE)
+#     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
+#     disponibilidad = models.BooleanField(default=True)
 
-    class Meta:
-        db_table = 'prenda_empresa'
-        unique_together = [['prenda_id', 'empresa_id']]
+#     class Meta:
+#         db_table = 'prenda_empresa'
+#         unique_together = [['prenda_id', 'empresa_id']]
 
-    def __str__(self):
-        return "{}_{}".format(self.empresa.__str__(), self.prenda.__str__())
+#     def __str__(self):
+#         return "{}_{}".format(self.empresa.__str__(), self.prenda.__str__())
 
 
 
