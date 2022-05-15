@@ -57,19 +57,19 @@ class MeasurementSerializer(serializers.ModelSerializer):
 class ClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cliente
-        fields = ['nombre', 'apellido', 'dni', 'email', 'contacto']
+        fields = ['nombre', 'apellido', 'dni', 'email', 'contacto', 'user']
 
     # tipo_usuario = serializers.CharField(read_only=True)
 
     contacto = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
-    # # cliente_id en medidas puede ser nulo, no se necesita agregar medias al crear ni editar cliente
+    # # cliente_id en medidas puede ser nulo, no se necesita agregar medidas al crear ni editar cliente
     # medidas = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
 
 class ContactoClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactoCliente
-        fields = ['cliente', 'direccion', 'telefono', 'ciudad']
+        fields = ['cliente', 'direccion', 'telefono', 'distrito']
 
     # cliente = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -87,7 +87,7 @@ class MedidaSerializer(serializers.ModelSerializer):
 class EmpresaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Empresa
-        fields = ['tipo_usuario', 'nombre', 'ruc', 'email', 'prendas', 'locales']
+        fields = ['tipo_usuario', 'nombre', 'ruc', 'email', 'prendas', 'locales', 'user']
     
     tipo_usuario = serializers.CharField(read_only=True)
 
@@ -99,7 +99,7 @@ class EmpresaSerializer(serializers.ModelSerializer):
 class LocalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Local
-        fields = ['nombre_sede', 'direccion', 'ciudad', 'telefono', 'empresa']
+        fields = ['nombre_sede', 'direccion', 'distrito', 'telefono', 'empresa']
 
     # empresa = serializers.PrimaryKeyRelatedField(read_only=True)
 
