@@ -18,53 +18,53 @@ def test_api(request):
     return Response({'response':"Successfully connected to ALMapi"})
 
 
-@api_view(['POST'])
-@never_cache
-def run_measureme_tool(request):
-    property_id = request.POST.get('property_id')
+# @api_view(['POST'])
+# @never_cache
+# def run_measureme_tool(request):
+#     property_id = request.POST.get('property_id')
 
-    # converts querydict to original dict
-    images = dict((request.data).lists())['image']
-    # validated data flag
-    flag = 1
-    arr = []
-    for img_name in images:
-        modified_data = modify_input_for_multiple_files(property_id,
-                                                        img_name)
-        image_serializer = ImageSerializer(data=modified_data, context={'request': request})
-        if image_serializer.is_valid():
-            image_serializer.save()
-            arr.append(image_serializer.data)
-        else:
-            flag = 0
-            return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     # converts querydict to original dict
+#     images = dict((request.data).lists())['image']
+#     # validated data flag
+#     flag = 1
+#     arr = []
+#     for img_name in images:
+#         modified_data = modify_input_for_multiple_files(property_id,
+#                                                         img_name)
+#         image_serializer = ImageSerializer(data=modified_data, context={'request': request})
+#         if image_serializer.is_valid():
+#             image_serializer.save()
+#             arr.append(image_serializer.data)
+#         else:
+#             flag = 0
+#             return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    if flag == 1:
-        frontimg_path = arr[0]['image']
-        sideimg_path = arr[1]['image']
-        # frontimg_path = os.path.relpath(arr[0]['image'], '/')
-        # sideimg_path = os.path.relpath(arr[1]['image'], '/')
-        front_image = ImageSegmentation.objects.create(front_input_image=frontimg_path, name='image_{:02d}'.format(int(uuid.uuid1() )))
-        side_image = ImageSegmentation.objects.create(side_input_image=sideimg_path, name='image_{:02d}'.format(int(uuid.uuid1() )))
-        runner = RunSegmentationInference(front_image, side_image)
-        runner.save_frontbg_output()
-        runner.save_sidebg_output()
-        measurements = runner.process_imgs()
+#     if flag == 1:
+#         frontimg_path = arr[0]['image']
+#         sideimg_path = arr[1]['image']
+#         # frontimg_path = os.path.relpath(arr[0]['image'], '/')
+#         # sideimg_path = os.path.relpath(arr[1]['image'], '/')
+#         front_image = ImageSegmentation.objects.create(front_input_image=frontimg_path, name='image_{:02d}'.format(int(uuid.uuid1() )))
+#         side_image = ImageSegmentation.objects.create(side_input_image=sideimg_path, name='image_{:02d}'.format(int(uuid.uuid1() )))
+#         runner = RunSegmentationInference(front_image, side_image)
+#         runner.save_frontbg_output()
+#         runner.save_sidebg_output()
+#         measurements = runner.process_imgs()
 
-        #store measurements
-        measure = Measurement()
-        measure.neck = measurements.neck_perimeter
-        measure.chest = measurements.chest_perimeter
-        measure.waist = measurements.waist_perimeter
-        measure.hip = measurements.hip_perimeter
-        measure.height = measurements.MFront.Height
-        measure.arm = measurements.MFront.FLarmDist
-        measure.leg = measurements.MFront.FLlegDist
-        measure.save()
+#         #store measurements
+#         measure = Measurement()
+#         measure.neck = measurements.neck_perimeter
+#         measure.chest = measurements.chest_perimeter
+#         measure.waist = measurements.waist_perimeter
+#         measure.hip = measurements.hip_perimeter
+#         measure.height = measurements.MFront.Height
+#         measure.arm = measurements.MFront.FLarmDist
+#         measure.leg = measurements.MFront.FLlegDist
+#         measure.save()
 
-        # returns results in Measurements
-        serializer = MeasurementSerializer(measure)
-        return Response(serializer.data)
+#         # returns results in Measurements
+#         serializer = MeasurementSerializer(measure)
+#         return Response(serializer.data)
 
 
 @api_view(['GET'])
@@ -104,14 +104,14 @@ def clean_folders(request):
 
 ## MEDIDAS / MEASUREMENTS
 
-@api_view(['DELETE'])
-def delete_last_measurement(request):
-    # returns deleted Measurement Data
-    measure = Measurement.objects.last()
-    Measurement.objects.filter(uuid=measure.uuid).delete()
+# @api_view(['DELETE'])
+# def delete_last_measurement(request):
+#     # returns deleted Measurement Data
+#     measure = Measurement.objects.last()
+#     Measurement.objects.filter(uuid=measure.uuid).delete()
 
-    serializer = MeasurementSerializer(measure)
-    return Response(data=serializer.data)
+#     serializer = MeasurementSerializer(measure)
+#     return Response(data=serializer.data)
 
 class MeasurementList(ListCreateAPIView):
     queryset = Measurement.objects.all()
