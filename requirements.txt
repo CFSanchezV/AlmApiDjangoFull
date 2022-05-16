@@ -26,7 +26,7 @@ MarkupSafe==2.0.1
 matplotlib==3.4.3
 mediapipe==0.8.8
 numpy==1.21.2
-opencv-contrib-python-headless==4.5.5.64
+# opencv-contrib-python-headless==4.5.5.64
 opencv-python-headless==4.5.5.64
 packaging==21.0
 Pillow==8.3.2
