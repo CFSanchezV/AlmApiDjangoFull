@@ -9,9 +9,9 @@ urlpatterns = [
     path('test/', views.test_api, name='test_api_communication'),
     path('clean_folders/', views.clean_folders, name='clean_img_folders'),
 
-    path('measureme/', views.run_measureme_tool, name='run_measurements_on_images'),
+    # path('measureme/', views.run_measureme_tool, name='run_measurements_on_images'),
+    # path('delete_last_measurement/', views.delete_last_measurement, name='delete_last_measurement'),
     
-    path('delete_last_measurement/', views.delete_last_measurement, name='delete_last_measurement'),
     path('medidas/', views.MeasurementList.as_view(), name='lista_medidas'),
     path('medidas/<uuid:pk>', views.MeasurementDetail.as_view(), name='detalle_medida'),
 
