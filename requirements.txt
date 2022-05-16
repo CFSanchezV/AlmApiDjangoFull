@@ -28,8 +28,8 @@ MarkupSafe==2.0.1
 matplotlib==3.4.3
 mediapipe==0.8.8
 numpy==1.21.2
+opencv-python-headless==4.5.3.56
 opencv-contrib-python-headless==4.5.3.56
-# opencv-python-headless==4.5.3.56
 packaging==21.0
 Pillow==8.3.2
 protobuf==3.18.1
