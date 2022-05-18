@@ -57,10 +57,10 @@ class MeasurementSerializer(serializers.ModelSerializer):
 class ClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cliente
-        fields = ['nombre', 'apellido', 'dni', 'email', 'contacto', 'user']
+        fields = ['id', 'nombre', 'apellido', 'dni', 'email', 'contacto', 'user']
 
     # tipo_usuario = serializers.CharField(read_only=True)
-
+    id = serializers.IntegerField(read_only=True)
     contacto = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
     # # cliente_id en medidas puede ser nulo, no se necesita agregar medidas al crear ni editar cliente
     # medidas = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
@@ -69,38 +69,39 @@ class ClienteSerializer(serializers.ModelSerializer):
 class ContactoClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactoCliente
-        fields = ['cliente', 'direccion', 'telefono', 'distrito']
+        fields = ['id', 'cliente', 'direccion', 'telefono', 'distrito']
 
-    # cliente = serializers.PrimaryKeyRelatedField(read_only=True)
+    id = serializers.IntegerField(read_only=True)
+    # cliente = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
 
 
 ## MEDIDAS
 class MedidaSerializer(serializers.ModelSerializer):
     # cliente = ClienteSerializer(many=False, read_only=True)
 
+    id = serializers.IntegerField(read_only=True)
     class Meta:
         model = Medida
-        fields = ('cliente', 'cuello', 'pecho', 'cintura', 'cadera', 'altura', 'brazo', 'pierna')
+        fields = ['id', 'cliente', 'cuello', 'pecho', 'cintura', 'cadera', 'altura', 'brazo', 'pierna']
     
 
 ## empresas
 class EmpresaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Empresa
-        fields = ['tipo_usuario', 'nombre', 'ruc', 'email', 'prendas', 'locales', 'user']
-    
-    tipo_usuario = serializers.CharField(read_only=True)
+        fields = ['id', 'nombre', 'ruc', 'email', 'prendas', 'locales', 'user']
 
+    id = serializers.IntegerField(read_only=True)
     prendas = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-
     locales = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
 
 class LocalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Local
-        fields = ['nombre_sede', 'direccion', 'distrito', 'telefono', 'empresa']
+        fields = ['id', 'nombre_sede', 'direccion', 'distrito', 'telefono', 'empresa']
 
+    id = serializers.IntegerField(read_only=True)
     # empresa = serializers.PrimaryKeyRelatedField(read_only=True)
 
 
@@ -109,16 +110,18 @@ class LocalSerializer(serializers.ModelSerializer):
 class PrendaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prenda
-        fields = ['titulo', 'descripcion', 'precio_sugerido', 'tela', 'empresas']
+        fields = ['id', 'titulo', 'descripcion', 'precio_sugerido', 'tela', 'empresas']
 
+    id = serializers.IntegerField(read_only=True)
     # tela = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
     # empresas = serializers.PrimaryKeyRelatedField(many=True)
 
 class TelaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tela
-        fields = ['titulo', 'descripcion', 'url_imagen', 'prenda']
+        fields = ['id', 'titulo', 'descripcion', 'url_imagen', 'prenda']
 
+    id = serializers.IntegerField(read_only=True)
     prenda = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
 
 
@@ -127,8 +130,9 @@ class TelaSerializer(serializers.ModelSerializer):
 class PedidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pedido
-        fields = ['fecha_entrega', 'cliente', 'local', 'estado_pedido']
-    
+        fields = ['id', 'fecha_entrega', 'cliente', 'local', 'estado_pedido']
+
+    id = serializers.IntegerField(read_only=True)
     #local = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     def validate(self, data):
@@ -153,8 +157,9 @@ class PedidoSerializer(serializers.ModelSerializer):
 class ItemPedidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemPedido
-        fields = ['pedido', 'prenda', 'medida', 'cantidad', 'precio_unitario']
+        fields = ['id', 'pedido', 'prenda', 'medida', 'cantidad', 'precio_unitario']
 
+    id = serializers.IntegerField(read_only=True)
     # pedido = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
 
@@ -162,19 +167,19 @@ class ItemPedidoSerializer(serializers.ModelSerializer):
 
 class PrendaTelaSerializer(serializers.ModelSerializer):
     tela = TelaSerializer(many=False)
-
+    id = serializers.IntegerField(read_only=True)
     class Meta:
         model = Prenda
-        fields = ['titulo', 'descripcion', 'precio', 'inventario', 'tela', 'empresas']
+        fields = ['id', 'titulo', 'descripcion', 'precio', 'inventario', 'tela', 'empresas']
     
 
 class EmpresaPrendaSerializer(serializers.ModelSerializer):
     prendas = PrendaSerializer(many=True)
     locales = LocalSerializer(many=True)
-
+    id = serializers.IntegerField(read_only=True)
     class Meta:
         model = Empresa
-        fields = ['tipo_usuario', 'nombre', 'ruc', 'email', 'prendas', 'locales']
+        fields = ['id', 'nombre', 'ruc', 'email', 'prendas', 'locales']
 
 
 class PedidoClienteSerializer(serializers.ModelSerializer):
@@ -183,7 +188,7 @@ class PedidoClienteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Pedido
-        fields = ['fecha_entrega', 'cliente', 'local', 'estado_pedido']
+        fields = ['id', 'fecha_entrega', 'cliente', 'local', 'estado_pedido']
 
 
 ### EXTRA: Assigns user IDs to cliente/empresa
@@ -216,3 +221,24 @@ class EmpresaUserSerializer(serializers.ModelSerializer):
         instance.user = validated_data.get('user', instance.user)
         instance.save()
         return instance
+
+
+## ASSOCIATED
+
+class AssociatedClienteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cliente
+        fields = ['id', 'nombre', 'apellido', 'dni', 'email', 'contacto']
+
+    id = serializers.IntegerField(read_only=True)
+    contacto = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
+
+
+class AssociatedEmpresaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Empresa
+        fields = ['id', 'nombre', 'ruc', 'email', 'prendas', 'locales']
+    
+    id = serializers.IntegerField(read_only=True)
+    prendas = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    locales = serializers.PrimaryKeyRelatedField(many=True, read_only=True)

@@ -334,7 +334,7 @@ def pedidos_por_cliente(request, id_cliente):
 
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
-from . serializers import ClienteUserSerializer, EmpresaUserSerializer
+from . serializers import ClienteUserSerializer, EmpresaUserSerializer, AssociatedClienteSerializer
 from rest_framework.generics import UpdateAPIView
 
 class RegistrarCliente(UpdateAPIView):
@@ -375,3 +375,29 @@ class RegistrarEmpresa(UpdateAPIView):
 
     def get_serializer_context(self):
         return {'request': self.request}
+
+
+# get user_id from username in URL/username, returns obj {"user_id": :id}
+
+# Aux Utils
+@api_view(['POST'])
+def get_user_id(request, username):
+    user = get_object_or_404(User, username=username)
+
+    return Response({"user_id": user.id})
+
+# UPDATE/GET/DELETE empresa or cliente linked to user_id in URL
+
+from . serializers import AssociatedEmpresaSerializer, AssociatedClienteSerializer
+
+class ClienteUserDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Cliente.objects.all()
+    serializer_class = ClienteSerializer
+    lookup_field = 'user_id'
+    serializer_class = AssociatedClienteSerializer
+
+class EmpresaUserDetail(RetrieveUpdateDestroyAPIView):
+    queryset = Empresa.objects.all()
+    serializer_class = EmpresaSerializer
+    lookup_field = 'user_id'
+    serializer_class = AssociatedEmpresaSerializer

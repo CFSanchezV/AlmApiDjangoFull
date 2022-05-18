@@ -46,4 +46,9 @@ urlpatterns = [
     # __________Association urls__________
     path('registrar_cliente/<int:pk>', views.RegistrarCliente.as_view(), name='registrar_cliente'),
     path('registrar_empresa/<int:pk>', views.RegistrarEmpresa.as_view(), name='registrar_empresa'),
+
+    # ___________Aux urls__________
+    path('id_from_username/<str:username>', views.get_user_id, name='id from username'),
+    path('cliente_asociado/<int:user_id>', views.ClienteUserDetail.as_view(), name='updateCliente'),
+    path('empresa_asociada/<int:user_id>', views.EmpresaUserDetail.as_view(), name='updateEmpresa'),
 ]
