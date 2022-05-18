@@ -8,7 +8,7 @@ import shutil
 
 from . utils import *
 from . models import ImageSegmentation, Measurement, Prenda, Tela, Empresa, Local, Cliente, ContactoCliente, ItemPedido, Pedido, Medida
-from . serializers import ClienteSerializer, EmpresaSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PrendaSerializer, TelaSerializer, PedidoSerializer, ItemPedidoSerializer, MedidaSerializer
+from . serializers import ClienteSerializer, EmpresaSerializer, LocalesEmpresaSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PrendaSerializer, TelaSerializer, PedidoSerializer, ItemPedidoSerializer, MedidaSerializer
 
 # UTILITIES REQUEST HANDLERS
 
@@ -293,7 +293,7 @@ class MedidaDetail(RetrieveUpdateDestroyAPIView):
 
 # __________CUSTOM VIEWS__________
 
-from . serializers import PedidoClienteSerializer, EmpresaPrendaSerializer, PrendaTelaSerializer
+from . serializers import PedidoClienteSerializer, EmpresaPrendaSerializer, PrendaTelaSerializer, LocalesEmpresaSerializer, MedidasClienteSerializer, ItemsPedidoPedidoSerializer
 
 # prendas segun tela
 @api_view(['GET'])
@@ -317,17 +317,49 @@ def empresas_por_prenda(request, id_prenda):
     return Response(serializer.data)
 
 
+# locales segun empresa
+@api_view(['GET'])
+def locales_por_empresa(request, id_empresa):
+    queryset = Local.objects.filter(empresa__id=id_empresa)
+    #custom serializer
+    serializer = LocalesEmpresaSerializer(
+        queryset, many=True, context={'request': request}
+    )
+    return Response(serializer.data)
+
+
+# medidas segun cliente
+@api_view(['GET'])
+def medidas_por_cliente(request, id_cliente):
+    queryset = Medida.objects.prefetch_related('cliente').filter(cliente__id=id_cliente)
+    #custom serializer
+    serializer = MedidasClienteSerializer(
+        queryset, many=True, context={'request': request}
+    )
+    return Response(serializer.data)
+
+
 # pedidos segun cliente
 @api_view(['GET'])
 def pedidos_por_cliente(request, id_cliente):
     queryset = Pedido.objects.select_related(
-            'cliente', 'local').prefetch_related('items_pedido__prenda').filter(cliente__id=id_cliente).order_by('-placed_at')
+            'cliente', 'local').prefetch_related('items_pedido').filter(cliente__id=id_cliente).order_by('-creado_en')
     #custom serializer
     serializer = PedidoClienteSerializer(
         queryset, many=True, context={'request': request}
     )
     return Response(serializer.data)
 
+
+# itemspedido segun pedido
+@api_view(['GET'])
+def itemspedido_por_pedido(request, id_pedido):
+    queryset = ItemPedido.objects.prefetch_related('pedido', 'prenda', 'medida').filter(pedido__id=id_pedido)
+    #custom serializer
+    serializer = ItemsPedidoPedidoSerializer(
+        queryset, many=True, context={'request': request}
+    )
+    return Response(serializer.data)
 
 
 ## VIEWS CON AUTENTICACION

@@ -182,6 +182,24 @@ class EmpresaPrendaSerializer(serializers.ModelSerializer):
         fields = ['id', 'nombre', 'ruc', 'email', 'prendas', 'locales']
 
 
+class LocalesEmpresaSerializer(serializers.ModelSerializer):
+    empresa = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
+    id = serializers.IntegerField(read_only=True)
+    
+    class Meta:
+        model = Local
+        fields = ['id', 'nombre_sede', 'direccion', 'distrito', 'telefono', 'empresa']
+
+
+class MedidasClienteSerializer(serializers.ModelSerializer):
+    cliente = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
+    id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Medida
+        fields = ['id', 'cliente', 'cuello', 'pecho', 'cintura', 'cadera', 'altura', 'brazo', 'pierna']
+
+
 class PedidoClienteSerializer(serializers.ModelSerializer):
     cliente = ClienteSerializer(many=False)
     local = LocalSerializer(many=False)
@@ -189,6 +207,17 @@ class PedidoClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pedido
         fields = ['id', 'fecha_entrega', 'cliente', 'local', 'estado_pedido']
+
+
+class ItemsPedidoPedidoSerializer(serializers.ModelSerializer):
+    pedido = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
+    prenda = PrendaSerializer(many=False)
+    medida = MedidaSerializer(many=False)
+    id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = ItemPedido
+        fields = ['id', 'pedido', 'prenda', 'medida', 'cantidad', 'precio_unitario']
 
 
 ### EXTRA: Assigns user IDs to cliente/empresa

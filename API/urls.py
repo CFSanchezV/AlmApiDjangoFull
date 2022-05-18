@@ -12,11 +12,11 @@ urlpatterns = [
     # path('measureme/', views.run_measureme_tool, name='run_measurements_on_images'),
     # path('delete_last_measurement/', views.delete_last_measurement, name='delete_last_measurement'),
     
-    path('medidas/', views.MeasurementList.as_view(), name='lista_medidas'),
-    path('medidas/<uuid:pk>', views.MeasurementDetail.as_view(), name='detalle_medida'),
+    path('measurements/', views.MeasurementList.as_view(), name='lista_measurements'),
+    path('measurements/<uuid:pk>', views.MeasurementDetail.as_view(), name='detalle_measurements'),
 
-    path('medidas_clientes/', views.MedidaList.as_view(), name='medidas_lista'),
-    path('medidas_clientes/<int:pk>', views.MedidaDetail.as_view(), name='medida_detalle'),
+    path('medidas/', views.MedidaList.as_view(), name='medidas_lista'),
+    path('medidas/<int:pk>', views.MedidaDetail.as_view(), name='medida_detalle'),
 
     path('clientes/', views.ClienteList.as_view(), name='lista_clientes'),
     path('clientes/<int:pk>', views.ClienteDetail.as_view(), name='detalle_cliente'),
@@ -41,7 +41,10 @@ urlpatterns = [
     # __________CUSTOM URLS__________
     path('prendas_tela/<int:id_tela>', views.prendas_por_tela, name='lista_prendas_tela'),
     path('empresas_prenda/<int:id_prenda>', views.empresas_por_prenda, name='lista_empresas_prenda'),
+    path('locales_empresa/<int:id_empresa>', views.locales_por_empresa, name='lista_locales_empresa'),
+    path('medidas_cliente/<int:id_cliente>', views.medidas_por_cliente, name='lista_medidas_cliente'),
     path('pedidos_cliente/<int:id_cliente>', views.pedidos_por_cliente, name='lista_pedidos_cliente'),
+    path('itemspedido_pedido/<int:id_pedido>', views.itemspedido_por_pedido, name='lista_items_en_pedido'),
 
     # __________Association urls__________
     path('registrar_cliente/<int:pk>', views.RegistrarCliente.as_view(), name='registrar_cliente'),
