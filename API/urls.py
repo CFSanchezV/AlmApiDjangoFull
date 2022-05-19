@@ -47,8 +47,9 @@ urlpatterns = [
     path('itemspedido_pedido/<int:id_pedido>', views.itemspedido_por_pedido, name='lista_items_en_pedido'),
 
     # __________Association urls__________
-    path('registrar_cliente/<int:pk>', views.RegistrarCliente.as_view(), name='registrar_cliente'),
-    path('registrar_empresa/<int:pk>', views.RegistrarEmpresa.as_view(), name='registrar_empresa'),
+    path('registrar_cliente/<int:pk>', views.RegistrarCliente.as_view(), name='registrar_cliente'), # takes clienteId
+    path('registrar_empresa/<int:pk>', views.RegistrarEmpresa.as_view(), name='registrar_empresa'), # takes empresaId
+    path('get_tipo_usuario/<int:user_id>', views.get_tipo_usuario, name='registrar_empresa'), # takes userId
 
     # ___________Aux urls__________
     path('id_from_username/<str:username>', views.get_user_id, name='id from username'),

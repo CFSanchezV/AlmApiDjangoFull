@@ -409,9 +409,28 @@ class RegistrarEmpresa(UpdateAPIView):
         return {'request': self.request}
 
 
-# get user_id from username in URL/username, returns obj {"user_id": :id}
-
 # Aux Utils
+
+# get tipo_usuario from associated cliente/empresa, returns obj {"tipo_usuario": :str}
+@api_view(['GET'])
+def get_tipo_usuario(request, user_id):
+    user = User.objects.filter(id=user_id).first()
+    clientes = Cliente.objects.filter(user=user_id)
+    empresas = Empresa.objects.filter(user=user_id)
+    cliente = clientes.first()
+    empresa = empresas.first()
+    
+    if user is None:
+        return Response({"tipo_usuario" : "Usuario no asociado"})
+    elif cliente is not None:
+        return Response({"tipo_usuario" : cliente.tipo_usuario})
+    elif empresa is not None:
+        return Response({"tipo_usuario" : empresa.tipo_usuario})
+    else:
+        return Response({"tipo_usuario" : "Ninguno"})
+
+
+# get user_id from username in URL/username, returns obj {"user_id": :id}
 @api_view(['POST'])
 def get_user_id(request, username):
     user = get_object_or_404(User, username=username)
