@@ -421,13 +421,13 @@ def get_tipo_usuario(request, user_id):
     empresa = empresas.first()
     
     if user is None:
-        return Response({"tipo_usuario" : "Usuario no asociado"})
+        return Response({"tipo_usuario" : "Usuario no existe"})
     elif cliente is not None:
         return Response({"tipo_usuario" : cliente.tipo_usuario})
     elif empresa is not None:
         return Response({"tipo_usuario" : empresa.tipo_usuario})
     else:
-        return Response({"tipo_usuario" : "Ninguno"})
+        return Response({"tipo_usuario" : "Usuario no asociado"})
 
 
 # get user_id from username in URL/username, returns obj {"user_id": :id}
