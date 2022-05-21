@@ -166,16 +166,16 @@ class ItemPedidoSerializer(serializers.ModelSerializer):
 # __________CUSTOM SERIALIZERS__________
 
 class PrendaTelaSerializer(serializers.ModelSerializer):
-    tela = TelaSerializer(many=False)
+    tela = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
     id = serializers.IntegerField(read_only=True)
     class Meta:
         model = Prenda
-        fields = ['id', 'titulo', 'descripcion', 'precio', 'inventario', 'tela', 'empresas', 'url_imagen']
+        fields = ['id', 'titulo', 'descripcion', 'precio_sugerido', 'tela', 'empresas', 'url_imagen']
     
 
 class EmpresaPrendaSerializer(serializers.ModelSerializer):
-    prendas = PrendaSerializer(many=True)
-    locales = LocalSerializer(many=True)
+    prendas = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    locales = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     id = serializers.IntegerField(read_only=True)
     class Meta:
         model = Empresa
