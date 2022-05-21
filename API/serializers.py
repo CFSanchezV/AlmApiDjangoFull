@@ -110,7 +110,7 @@ class LocalSerializer(serializers.ModelSerializer):
 class PrendaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prenda
-        fields = ['id', 'titulo', 'descripcion', 'precio_sugerido', 'tela', 'empresas']
+        fields = ['id', 'titulo', 'descripcion', 'precio_sugerido', 'tela', 'empresas', 'url_imagen']
 
     id = serializers.IntegerField(read_only=True)
     # tela = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
@@ -170,7 +170,7 @@ class PrendaTelaSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     class Meta:
         model = Prenda
-        fields = ['id', 'titulo', 'descripcion', 'precio', 'inventario', 'tela', 'empresas']
+        fields = ['id', 'titulo', 'descripcion', 'precio', 'inventario', 'tela', 'empresas', 'url_imagen']
     
 
 class EmpresaPrendaSerializer(serializers.ModelSerializer):

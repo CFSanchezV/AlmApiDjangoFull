@@ -161,6 +161,8 @@ class Prenda(models.Model):
     creado_en = models.DateTimeField(verbose_name='Creada en', auto_now_add=True)
     empresas = models.ManyToManyField(Empresa, related_name='prendas', db_table='prenda_empresa') #many-many
 
+    url_imagen = models.URLField(verbose_name='url_imagen', null=True, blank=True, default=None)
+
     class Meta:
         db_table = 'prenda'
 
