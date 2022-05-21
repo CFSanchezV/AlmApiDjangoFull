@@ -46,6 +46,7 @@ urlpatterns = [
     path('prendas_tela/<int:id_tela>', views.prendas_por_tela, name='lista_prendas_tela'),
     path('empresas_prenda/<int:id_prenda>', views.empresas_por_prenda, name='lista_empresas_prenda'),
     path('locales_empresa/<int:id_empresa>', views.locales_por_empresa, name='lista_locales_empresa'),
+    path('pedidos_local/<int:id_local>', views.pedidos_por_local, name='lista_pedidos_local'), # NEW
     path('medidas_cliente/<int:id_cliente>', views.medidas_por_cliente, name='lista_medidas_cliente'),
     path('pedidos_cliente/<int:id_cliente>', views.pedidos_por_cliente, name='lista_pedidos_cliente'),
     path('itemspedido_pedido/<int:id_pedido>', views.itemspedido_por_pedido, name='lista_items_en_pedido'),
@@ -57,6 +58,6 @@ urlpatterns = [
 
     # ___________Aux urls__________
     path('id_from_username/<str:username>', views.get_user_id, name='id from username'),
-    path('cliente_asociado/<int:user_id>', views.ClienteUserDetail.as_view(), name='updateCliente'),
-    path('empresa_asociada/<int:user_id>', views.EmpresaUserDetail.as_view(), name='updateEmpresa'),
+    path('cliente_asociado/<int:user_id>', views.ClienteUserDetail.as_view(), name='updateCliente'), # MAIN UPDATERS
+    path('empresa_asociada/<int:user_id>', views.EmpresaUserDetail.as_view(), name='updateEmpresa'), # MAIN UPDATERS
 ]

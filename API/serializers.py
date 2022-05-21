@@ -209,12 +209,12 @@ class MedidasClienteSerializer(serializers.ModelSerializer):
 
 
 class PedidoClienteSerializer(serializers.ModelSerializer):
-    cliente = ClienteSerializer(many=False)
-    local = LocalSerializer(many=False)
-
     class Meta:
         model = Pedido
         fields = ['id', 'fecha_entrega', 'cliente', 'local', 'estado_pedido']
+
+    cliente = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
+    local = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
 
 
 class ItemsPedidoPedidoSerializer(serializers.ModelSerializer):
@@ -260,16 +260,25 @@ class EmpresaUserSerializer(serializers.ModelSerializer):
         return instance
 
 
+class LocalesPedidoSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    class Meta:
+        model = Local
+        fields = ['id', 'nombre_sede', 'direccion', 'distrito', 'telefono', 'empresa', 'pedidos_local']
+
+    empresa = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
+    pedidos_local = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
 ## ASSOCIATED
 
 class AssociatedClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cliente
-        fields = ['id', 'nombre', 'apellido', 'dni', 'email', 'contacto']
+        fields = ['id', 'nombre', 'apellido', 'dni', 'email', 'contacto', 'pedidos_cliente', 'medidas']
 
     id = serializers.IntegerField(read_only=True)
     contacto = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
-
+    
 
 class AssociatedEmpresaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -277,5 +286,5 @@ class AssociatedEmpresaSerializer(serializers.ModelSerializer):
         fields = ['id', 'nombre', 'ruc', 'email', 'prendas', 'locales']
     
     id = serializers.IntegerField(read_only=True)
-    prendas = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    locales = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    # prendas = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    # locales = serializers.PrimaryKeyRelatedField(many=True, read_only=True)

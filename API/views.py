@@ -8,7 +8,7 @@ import shutil
 
 from . utils import *
 from . models import ImageSegmentation, Measurement, Prenda, Tela, Empresa, Local, Cliente, ContactoCliente, ItemPedido, Pedido, Medida
-from . serializers import ClienteSerializer, EmpresaFullSerializer, EmpresaSerializer, LocalesEmpresaSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PrendaSerializer, TelaSerializer, PedidoSerializer, ItemPedidoSerializer, MedidaSerializer
+from . serializers import ClienteSerializer, EmpresaFullSerializer, EmpresaSerializer, LocalesEmpresaSerializer, LocalesPedidoSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PrendaSerializer, TelaSerializer, PedidoSerializer, ItemPedidoSerializer, MedidaSerializer
 
 # UTILITIES REQUEST HANDLERS
 
@@ -145,7 +145,7 @@ class ClienteList(ListCreateAPIView):
         return {'request': self.request}
 
 class ClienteDetail(RetrieveUpdateDestroyAPIView):
-    queryset = Cliente.objects.all()
+    queryset = Cliente.objects.select_related('contacto').all()
     serializer_class = ClienteSerializer
 
     def delete(self, request, pk):
@@ -349,6 +349,17 @@ def locales_por_empresa(request, id_empresa):
     return Response(serializer.data)
 
 
+# pedidos_por_local
+@api_view(['GET'])
+def pedidos_por_local(request, id_local):
+    queryset = Pedido.objects.filter(local__id=id_local)
+    #custom serializer
+    serializer = LocalesPedidoSerializer(
+        queryset, many=True, context={'request': request}
+    )
+    return Response(serializer.data)
+
+
 # medidas segun cliente
 @api_view(['GET'])
 def medidas_por_cliente(request, id_cliente):
@@ -442,13 +453,14 @@ def get_tipo_usuario(request, user_id):
     empresa = empresas.first()
     
     if user is None:
-        return Response({"tipo_usuario" : "Usuario no existe"})
+        return Response(
+            {"tipo_usuario" : "Usuario no existe", "associated_id": "No asociado"})
     elif cliente is not None:
-        return Response({"tipo_usuario" : cliente.tipo_usuario})
+        return Response({"tipo_usuario" : cliente.tipo_usuario, "associated_id": str(cliente.id)})
     elif empresa is not None:
-        return Response({"tipo_usuario" : empresa.tipo_usuario})
+        return Response({"tipo_usuario" : empresa.tipo_usuario, "associated_id": str(empresa.id)})
     else:
-        return Response({"tipo_usuario" : "Usuario no asociado"})
+        return Response({"tipo_usuario" : "Usuario no asociado", "associated_id": "No asociado"})
 
 
 # get user_id from username in URL/username, returns obj {"user_id": :id}
@@ -463,13 +475,28 @@ def get_user_id(request, username):
 from . serializers import AssociatedEmpresaSerializer, AssociatedClienteSerializer
 
 class ClienteUserDetail(RetrieveUpdateDestroyAPIView):
-    queryset = Cliente.objects.all()
+    queryset = Cliente.objects.prefetch_related('contacto', 'pedidos_cliente', 'medidas').all()
     serializer_class = ClienteSerializer
     lookup_field = 'user_id'
     serializer_class = AssociatedClienteSerializer
 
+    def delete(self, request, *args, **kwargs):
+        cliente = self.get_object() #cliente obj
+        if cliente.pedidos_cliente.count() > 0:
+            return Response({'error': 'Cliente no puede ser eliminado porque tiene un pedido asociado'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        cliente.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class EmpresaUserDetail(RetrieveUpdateDestroyAPIView):
-    queryset = Empresa.objects.all()
+    queryset = Empresa.objects.prefetch_related('prendas', 'locales').all()
     serializer_class = EmpresaSerializer
     lookup_field = 'user_id'
     serializer_class = AssociatedEmpresaSerializer
+
+    def delete(self, request, *args, **kwargs):
+        empresa = self.get_object() #empresa obj
+        if empresa.locales.count() > 0:
+            return Response({'error': 'Empresa no puede ser eliminada porque tiene locales asociados'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        empresa.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
