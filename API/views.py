@@ -8,7 +8,7 @@ import shutil
 
 from . utils import *
 from . models import ImageSegmentation, Measurement, Prenda, Tela, Empresa, Local, Cliente, ContactoCliente, ItemPedido, Pedido, Medida
-from . serializers import ClienteSerializer, EmpresaSerializer, LocalesEmpresaSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PrendaSerializer, TelaSerializer, PedidoSerializer, ItemPedidoSerializer, MedidaSerializer
+from . serializers import ClienteSerializer, EmpresaFullSerializer, EmpresaSerializer, LocalesEmpresaSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PrendaSerializer, TelaSerializer, PedidoSerializer, ItemPedidoSerializer, MedidaSerializer
 
 # UTILITIES REQUEST HANDLERS
 
@@ -179,6 +179,27 @@ class EmpresaList(ListCreateAPIView):
 class EmpresaDetail(RetrieveUpdateDestroyAPIView):
     queryset = Empresa.objects.all()
     serializer_class = EmpresaSerializer
+
+    def delete(self, request, pk):
+        empresa = get_object_or_404(Empresa, pk=pk)
+        if empresa.locales.count() > 0:
+            return Response({'error': 'Empresa no puede ser eliminada porque tiene locales asociados'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        empresa.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class EmpresaFullList(ListCreateAPIView):
+    # queryset = Empresa.objects.all()
+    queryset = Empresa.objects.prefetch_related('prendas', 'locales').all()
+    serializer_class = EmpresaFullSerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+class EmpresaFullDetail(RetrieveUpdateDestroyAPIView):
+    # queryset = Empresa.objects.all()
+    queryset = Empresa.objects.prefetch_related('prendas', 'locales').all()
+    serializer_class = EmpresaFullSerializer
 
     def delete(self, request, pk):
         empresa = get_object_or_404(Empresa, pk=pk)

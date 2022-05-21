@@ -25,6 +25,10 @@ urlpatterns = [
 
     path('empresas/', views.EmpresaList.as_view(), name='lista_empresas'),
     path('empresas/<int:pk>', views.EmpresaDetail.as_view(), name='detalle_empresa'),
+    ## Attempt
+    path('empresas_full/', views.EmpresaFullList.as_view(), name='lista_empresas_full'),
+    path('empresas_full/<int:pk>', views.EmpresaFullDetail.as_view(), name='detalle_empresa_full'),
+
     path('locales/', views.LocalList.as_view(), name='lista_locales'),
     path('locales/<int:pk>', views.LocalDetail.as_view(), name='detalle_local'),
 

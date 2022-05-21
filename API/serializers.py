@@ -96,6 +96,14 @@ class EmpresaSerializer(serializers.ModelSerializer):
     locales = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
 
+class EmpresaFullSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Empresa
+        fields = ['id', 'nombre', 'ruc', 'email', 'prendas', 'locales', 'user']
+
+    id = serializers.IntegerField(read_only=True)
+
+
 class LocalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Local
