@@ -205,7 +205,7 @@ class MedidasClienteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Medida
-        fields = ['id', 'cliente', 'cuello', 'pecho', 'cintura', 'cadera', 'altura', 'brazo', 'pierna']
+        fields = ['id', 'cuello', 'pecho', 'cintura', 'cadera', 'altura', 'brazo', 'pierna', 'creado_en']
 
 
 class PedidoClienteSerializer(serializers.ModelSerializer):
