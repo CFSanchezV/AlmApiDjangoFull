@@ -200,7 +200,6 @@ class LocalesEmpresaSerializer(serializers.ModelSerializer):
 
 
 class MedidasClienteSerializer(serializers.ModelSerializer):
-    cliente = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
     id = serializers.IntegerField(read_only=True)
 
     class Meta:
