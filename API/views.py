@@ -385,15 +385,12 @@ def pedidos_por_cliente(request, id_cliente):
 
 
 # pedidos segun empresa
+@api_view(['GET'])
 def pedidos_por_empresa(request, id_empresa):
-    locales = Empresa.objects.prefetch_related('locales').filter(id=id_empresa)
-    locales_id_list = []
-    for local in locales:
-        locales_id_list.append(local.id)
-
+    locales = Local.objects.filter(empresa=id_empresa)
+    # print(locales.all().values_list('id')) || print(locales.values_list('id'))
     queryset = Pedido.objects.select_related(
-            'cliente', 'local').prefetch_related('items_pedido').filter(pedido__local__in=locales).order_by('-creado_en')
-
+            'cliente', 'local').prefetch_related('items_pedido').filter(local_id__in=locales.all().values_list('id'))
     #custom serializer
     serializer = PedidoClienteSerializer(
         queryset, many=True, context={'request': request}
