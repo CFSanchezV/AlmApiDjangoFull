@@ -287,3 +287,12 @@ class AssociatedEmpresaSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
     # prendas = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     # locales = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+
+class PrendaTelaFullSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Prenda
+        fields = ['id', 'titulo', 'descripcion', 'precio_sugerido', 'tela', 'empresas', 'url_imagen']
+
+    id = serializers.IntegerField(read_only=True)
+    tela = TelaSerializer(many=False)

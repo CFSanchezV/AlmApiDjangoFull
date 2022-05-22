@@ -8,7 +8,7 @@ import shutil
 
 from . utils import *
 from . models import ImageSegmentation, Measurement, Prenda, Tela, Empresa, Local, Cliente, ContactoCliente, ItemPedido, Pedido, Medida
-from . serializers import ClienteSerializer, EmpresaFullSerializer, EmpresaSerializer, LocalesEmpresaSerializer, LocalesPedidoSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PrendaSerializer, TelaSerializer, PedidoSerializer, ItemPedidoSerializer, MedidaSerializer
+from . serializers import ClienteSerializer, EmpresaFullSerializer, EmpresaSerializer, LocalesEmpresaSerializer, LocalesPedidoSerializer, MeasurementSerializer, ImageSerializer, LocalSerializer, ContactoClienteSerializer, PrendaSerializer, PrendaTelaFullSerializer, TelaSerializer, PedidoSerializer, ItemPedidoSerializer, MedidaSerializer
 
 # UTILITIES REQUEST HANDLERS
 
@@ -515,3 +515,14 @@ class EmpresaUserDetail(RetrieveUpdateDestroyAPIView):
             return Response({'error': 'Empresa no puede ser eliminada porque tiene locales asociados'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         empresa.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+## CHANGED FLOW
+
+# PRENDAS + CON TELA OBJECT
+class PrendaTelaFullList(ListCreateAPIView):
+    queryset = Prenda.objects.select_related('tela').prefetch_related('empresas').all()
+    serializer_class = PrendaTelaFullSerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}

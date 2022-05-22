@@ -52,6 +52,8 @@ urlpatterns = [
     path('pedidos_empresa/<int:id_empresa>', views.pedidos_por_empresa, name='lista_pedidos_empresa'),
     path('itemspedido_pedido/<int:id_pedido>', views.itemspedido_por_pedido, name='lista_items_en_pedido'),
 
+    path('prendas_con_tela/', views.PrendaTelaFullList.as_view(), name='lista_prendas_con_tela'),
+
     # __________Association urls__________
     path('registrar_cliente/<int:pk>', views.RegistrarCliente.as_view(), name='registrar_cliente'), # takes clienteId
     path('registrar_empresa/<int:pk>', views.RegistrarEmpresa.as_view(), name='registrar_empresa'), # takes empresaId
