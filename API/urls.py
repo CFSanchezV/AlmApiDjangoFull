@@ -49,6 +49,7 @@ urlpatterns = [
     path('pedidos_local/<int:id_local>', views.pedidos_por_local, name='lista_pedidos_local'), # NEW
     path('medidas_cliente/<int:id_cliente>', views.medidas_por_cliente, name='lista_medidas_cliente'),
     path('pedidos_cliente/<int:id_cliente>', views.pedidos_por_cliente, name='lista_pedidos_cliente'),
+    path('pedidos_empresa/<int:id_empresa>', views.pedidos_por_empresa, name='lista_pedidos_empresa'),
     path('itemspedido_pedido/<int:id_pedido>', views.itemspedido_por_pedido, name='lista_items_en_pedido'),
 
     # __________Association urls__________
