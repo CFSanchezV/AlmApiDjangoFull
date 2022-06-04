@@ -83,7 +83,14 @@ class MedidaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Medida
         fields = ['id', 'cliente', 'cuello', 'pecho', 'cintura', 'cadera', 'altura', 'brazo', 'pierna']
-    
+
+
+class MedidaConFechaSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    class Meta:
+        model = Medida
+        fields = ['id', 'cuello', 'pecho', 'cintura', 'cadera', 'altura', 'brazo', 'pierna', 'creado_en']
+
 
 ## empresas
 class EmpresaSerializer(serializers.ModelSerializer):
@@ -219,7 +226,7 @@ class PedidoClienteSerializer(serializers.ModelSerializer):
 class ItemsPedidoPedidoSerializer(serializers.ModelSerializer):
     pedido = serializers.PrimaryKeyRelatedField(many=False, read_only=True)
     prenda = PrendaSerializer(many=False)
-    medida = MedidaSerializer(many=False)
+    medida = MedidaConFechaSerializer(many=False)
     id = serializers.IntegerField(read_only=True)
 
     class Meta:
