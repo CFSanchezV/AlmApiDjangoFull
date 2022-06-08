@@ -14,3 +14,5 @@ operations = [
     """)
 
 ]
+
+# ![Heroku Config Variables](/config_vars.png "Heroku config vars")
