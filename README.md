@@ -6,9 +6,9 @@ Realizar despliegue de aplicación de Django en Heroku Cloud
 - [Configuración](#setup)
     - [Instalación de Heroku CLI](#instalar-heroku-cli)
     - [Entorno virtual](#entorno-virtual)
-    - [Archivo de procesos para heroku](#create-a-procfile)
-    - [Uso de variables de entorno](#environment-variables)
-- [Configuración de la base de datos](#database-settings)
+    - [Archivo de procesos para heroku](#crear-un-procfile)
+    - [Uso de variables de entorno](#variables-de-entorno)
+- [Configuración de la base de datos](#configuracion-adicional)
 - [Archivos estáticos y multimedia](#static-and-media-files)
 - [Especificación de runtime de python](#specifying-your-python-runtime)
 - [Crear una aplicación Heroku y desplegar un proyecto Django](#creating-heroku-app-and-deploying-django-project)
@@ -80,7 +80,7 @@ web: gunicorn nombre_del_proyecto.wsgi --log-file -
 ### Variables de entorno
 - Las variables de entorno limitan la necesidad de modificar y voler a desplegar la aplicación debido a cambios en la configuración.
 
-### Configuración
+### Configuración adicional
 - Para poder iniciar el servidor se hará uso de ciertas variables de entorno. 
 - A continuación, instalar la bilbioteca que permitirá leer fácilmente las variables de entorno.
 ```bash
