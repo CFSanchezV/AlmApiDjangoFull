@@ -4,15 +4,15 @@ Realizar despliegue de aplicación de Django en Heroku Cloud
 ### Tabla de contenidos
 - [Supuestos](#supuestos)
 - [Configuración](#setup)
-    - [Instalación de Heroku CLI](#install-heroku-cli)
-    - [Entorno virtual](#virtual-environment)
+    - [Instalación de Heroku CLI](#instalar-heroku-cli)
+    - [Entorno virtual](#entorno-virtual)
     - [Archivo de procesos para heroku](#create-a-procfile)
     - [Uso de variables de entorno](#environment-variables)
 - [Configuración de la base de datos](#database-settings)
 - [Archivos estáticos y multimedia](#static-and-media-files)
 - [Especificación de runtime de python](#specifying-your-python-runtime)
 - [Crear una aplicación Heroku y desplegar un proyecto Django](#creating-heroku-app-and-deploying-django-project)
-    - [Añadir configuraciones a tu aplicación Heroku](#adding-configurations-to-your-heroku-app)
+    - [Añadir configuraciones a la aplicación Heroku](#adding-configurations-to-your-heroku-app)
     - [Pushing Project To Heroku](#pushing-project-to-heroku)
     - [Migración de la base de datos]("database-migrations)
     - [Despliegue de Postgres local a Heroku](#pushing-local-postgres-database-to-heroku)
@@ -30,11 +30,11 @@ Realizar despliegue de aplicación de Django en Heroku Cloud
 
 ## Lista de comprobación
 - [ ] Procfile
-- [ ] Añadir la configuración al archivo .env.
+- [ ] Añadir las configuraciones al los archivos settings.py y url.py
 - [ ] Configurar la url de la base de datos.
 - [ ] Configurar Whitenoise para archivos estáticos.
 - [ ] Crear un archivo requirements.txt
-- [ ] Crear un archivo runtime.txt para indicar a heroku la versión de python debe utilizar.
+- [ ] Crear un archivo runtime.txt para indicar a heroku la versión de python a utilizar.
 - [ ] Crear una aplicación heroku y una instancia postgres.
 - [ ] Desplegar.
 
@@ -42,7 +42,7 @@ Realizar despliegue de aplicación de Django en Heroku Cloud
 ### Instalar heroku CLI
 Crea una cuenta en heroku si no se tiene una, [Regístrate](https://signup.heroku.com/).
 
-Recomendación: Instalar [Heroku Toolbelt](https://toolbelt.heroku.com/). Es una herramienta de línea de comandos para gestionar tus aplicaciones Heroku
+Instalar [Heroku Toolbelt](https://toolbelt.heroku.com/). Es una herramienta de línea de comandos para gestionar aplicaciones Heroku
 
 Después de instalar Heroku Toolbelt, abrir un terminal y entrar en la cuenta:
 ```bash
@@ -53,7 +53,7 @@ $ heroku login
 - Trabajar en un entorno virtual
 ```bash
 cd directoriodelproyecto
-python3 -m venv virtual
+python3 -m venv virtual_env
 source virtual/bin/activate
 ```
 - A continuación, se instalan las bibliotecas necesarias especificadas en el archivo requirements.txt 
@@ -98,7 +98,7 @@ ALLOWED_HOSTS = ['*']
 
 ### Configuración de la base de datos
 - La librería `dj-database-url` permite generar la configuración de la base de datos a partir de una url de base de datos.
-- También instalar `psycopg2` nuestro motor postgres.
+- También instalar `psycopg2` para la base de datos (PostgreSQL).
 ```bash
 pip install dj-database-url psycopg2
 ```
@@ -119,7 +119,7 @@ DATABASES = {
 
 
 ### Archivos estáticos y multimedia
->> Django no soporta servir archivos estáticos en producción. Sin embargo, el la bilbioteca WhiteNoise fue diseñada con este propósito.
+> Django no soporta servir archivos estáticos en producción. Sin embargo, el la bilbioteca WhiteNoise fue diseñada con este propósito.
 - Instalar whitenoise
 ```bash
 pip install whitenoise
@@ -159,7 +159,7 @@ MEDIA_URL = '/media'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 ```
 
-- En el archivo `urls.py` (el principal) agregamos las siguientes líneas de código, esto con la finalidad de poder utilizar los archivos estáticos.
+- En el archivo `urls.py` (el principal) agregar las siguientes líneas de código, esto con la finalidad de poder utilizar los archivos estáticos.
 ```python
 from django.conf import settings
 from django.conf.urls.static import static
@@ -172,7 +172,7 @@ urlpatterns = [
 ## Especificación del runtime de python
 
 - Este archivo contiene la versión de python que heroku usará.
-- crear el archivo `runtime.txt` en la raíz de tu proyecto y añadir la versión de python con el siguiente formato
+- crear el archivo `runtime.txt` en la raíz del proyecto y añadir la versión de python con el siguiente formato
 ```
 python-3.9.12
 ```
@@ -208,7 +208,7 @@ heroku run python manage.py migrate
 - Ahora puede abrir la aplicación en su navegador visitando `https://nombre-de-la-app.herokuapp.com`.
 
 ### Añadiendo configuraciones a la aplicación Heroku a través del Dashboard
-- Entrae a [heroku dashboard](https://dashboard.heroku.com/apps), seleccionar la aplicación e ir a la pestaña de configuración. Hacer clic en el menú de configuración y luego en el botón `Reveal Config Vars`
+- Entrar a [heroku dashboard](https://dashboard.heroku.com/apps), seleccionar la aplicación e ir a la pestaña de configuración. Hacer clic en el menú de configuración y luego en el botón `Reveal Config Vars`
 - A continuación añadir todas las variables de entorno, por defecto se tiene la configuración `DATABASE_URL` creada después de instalar postgres en heroku.
 - Las variables de entorno a añadir son las mismas que las siguientes:
 
@@ -245,7 +245,7 @@ DEBUG = config('DJANGO_DEBUG', default=True, cast=bool)
 SECRET_KEY = config('SECRET_KEY', default='La llave default que proporciona Django')
 ...
 ...
-# En la última línea del archivo agregar el siguiente código.
+# En la última línea del archivo agregar el siguiente código:
 if config('DJANGO_PRODUCTION', default=False, cast=bool):
     from .settings_production import *
 ```
@@ -253,7 +253,9 @@ if config('DJANGO_PRODUCTION', default=False, cast=bool):
 
 
 ## Recursos adicionales
-### Heroku Docs
+* [Guía alternativa en español](https://codigofacilito.com/articulos/deploy-django-heroku)
+
+### Documentación Heroku
 * [Heroku Postgres](https://devcenter.heroku.com/articles/heroku-postgresql)
 * [Archivos estáticos en Heroku y Whitenoise](https://devcenter.heroku.com/articles/django-assets)
 * [Heroku python Runtimes](https://devcenter.heroku.com/articles/python-runtimes)
