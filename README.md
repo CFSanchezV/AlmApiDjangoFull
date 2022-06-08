@@ -220,7 +220,7 @@ heroku run python manage.py migrate
 - A continuación añadir todas las variables de entorno, por defecto se tiene la configuración `DATABASE_URL` creada después de instalar postgres en heroku.
 - Las variables de entorno a añadir son las mismas que las siguientes:
 
-<img src="https://imgur.com/a/pGyiHaU" alt="Heroku config vars" width="400" height="300">
+<img src="/config_vars.png" alt="Heroku config vars" width="400" height="300">
 
 
 - Luego, generar un nuevo archivo llamado `settings_production.py` y colocar el siguiente código:
