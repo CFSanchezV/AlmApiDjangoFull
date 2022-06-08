@@ -9,17 +9,15 @@ Realizar despliegue de aplicación de Django en Heroku Cloud
     - [Archivo de procesos para heroku](#crear-un-procfile)
     - [Uso de variables de entorno](#variables-de-entorno)
     - [Configuración adicional](#configuración-adicional)
-- [Configuración de la base de datos](#configuración de la base de datos)
+- [Configuración de la base de datos](#configuración-de-la-base-de-datos)
 - [Archivos estáticos y multimedia](#archivos-estáticos-y-multimedia)
-- [Especificación de runtime de python](#specifying-your-python-runtime)
-- [Crear una aplicación Heroku y desplegar un proyecto Django](#creating-heroku-app-and-deploying-django-project)
-    - [Añadir configuraciones a la aplicación Heroku](#adding-configurations-to-your-heroku-app)
-    - [Pushing Project To Heroku](#pushing-project-to-heroku)
-    - [Migración de la base de datos]("database-migrations)
-    - [Despliegue de Postgres local a Heroku](#pushing-local-postgres-database-to-heroku)
-    - [Ejecución de pruebas en heroku](#confirming-that-tests-run-on-heroku)
-- [Errores de despliegue y problemas comunes](#why-am-i-getting-errors)
-- [Recursos adicionales](#resources)
+- [Especificación de runtime de python](#especificación-del-runtime-de-python)
+- [Crear la aplicación en Heroku](#crear-la-aplicación-en-heroku)
+- [Desplegando el Proyecto en Heroku y ejecutando las migraciones](#desplegando-el-proyecto-en-heroku-y-ejecutando-las-migraciones)
+- [Añadir configuraciones a la aplicación Heroku](#añadiendo-configuraciones-a-la-aplicación-heroku)
+    
+- [Recursos adicionales](#recursos-adicionales)
+- [Documentación Heroku](#documentación-heroku)
 
 ## Supuestos
 * Se tienen los archivos del proyecto a desplegar.
@@ -181,7 +179,7 @@ python-3.9.12
 - Lista de runtime de python soportados en heroku: [Heroku Python Runtimes](https://devcenter.heroku.com/articles/python-runtimes).
 
 
-## Creando la aplicación Heroku y desplegando el proyecto Django.
+## Crear la aplicación en Heroku
 
 - En el directorio raíz del proyecto (donde está `manage.py`)
 
@@ -198,6 +196,9 @@ heroku addons:create heroku-postgresql:hobby-dev
 heroku git:remote -a <nombre-de-la-app>
 ```
 
+
+## Desplegando el Proyecto en Heroku y ejecutando las migraciones
+
 - Se procede realizando el despliegue desde la terminal en heroku.
 ```bash
 git push heroku <repositorio-local>:master
@@ -209,7 +210,12 @@ heroku run python manage.py migrate
 
 - Ahora puede abrir la aplicación en su navegador visitando `https://nombre-de-la-app.herokuapp.com`.
 
-### Añadiendo configuraciones a la aplicación Heroku a través del Dashboard
+
+
+### Añadiendo configuraciones a la aplicación Heroku
+
+#### A través del Dashboard
+
 - Entrar a [heroku dashboard](https://dashboard.heroku.com/apps), seleccionar la aplicación e ir a la pestaña de configuración. Hacer clic en el menú de configuración y luego en el botón `Reveal Config Vars`
 - A continuación añadir todas las variables de entorno, por defecto se tiene la configuración `DATABASE_URL` creada después de instalar postgres en heroku.
 - Las variables de entorno a añadir son las mismas que las siguientes:
