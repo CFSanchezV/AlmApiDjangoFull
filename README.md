@@ -221,7 +221,7 @@ heroku run python manage.py migrate
 - Las variables de entorno a añadir son las mismas que las siguientes:
 
 
-<img src="/config_vars.png" alt="Heroku Config Variables" width="400" height="200" />
+<img src="/config_vars.png" alt="Heroku Config Variables" width="600" height="300" />
 
 
 - Luego, generar un nuevo archivo llamado `settings_production.py` y colocar el siguiente código:
