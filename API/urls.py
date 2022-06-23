@@ -52,6 +52,8 @@ urlpatterns = [
     path('pedidos_empresa/<int:id_empresa>', views.pedidos_por_empresa, name='lista_pedidos_empresa'),
     path('itemspedido_pedido/<int:id_pedido>', views.itemspedido_por_pedido, name='lista_items_en_pedido'),
 
+    path('pedidos_empresa_confirmados/<int:id_empresa>', views.pedidos_por_empresa_confirmados, name='lista_pedidos_empresa_confirmado'),
+
     path('prendas_con_tela/', views.PrendaTelaFullList.as_view(), name='lista_prendas_con_tela'),
 
     # __________Association urls__________

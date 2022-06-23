@@ -409,6 +409,20 @@ def itemspedido_por_pedido(request, id_pedido):
     return Response(serializer.data)
 
 
+# pedidos segun empresa y confirmados
+@api_view(['GET'])
+def pedidos_por_empresa_confirmados(request, id_empresa):
+    locales = Local.objects.filter(empresa=id_empresa)
+    # print(locales.all().values_list('id')) || print(locales.values_list('id'))
+    queryset = Pedido.objects.select_related(
+            'cliente', 'local').prefetch_related('items_pedido').filter(local_id__in=locales.all().values_list('id'), estado_pedido='C')
+    #custom serializer
+    serializer = PedidoClienteSerializer(
+        queryset, many=True, context={'request': request}
+    )
+    return Response(serializer.data)
+
+
 ## VIEWS CON AUTENTICACION
 
 from rest_framework.permissions import IsAuthenticated
